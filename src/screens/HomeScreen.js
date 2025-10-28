@@ -46,11 +46,19 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.statsContainer}>
         <Text style={styles.statsTitle}>Your Wardrobe Summary</Text>
         <View style={styles.statsRow}>
-          <Text style={styles.statsText}>
-            👕 Total Items: {stats.totalItems}
-          </Text>
-          <Text style={styles.statsText}>🔥 Most Worn: {stats.mostWorn}</Text>
-          <Text style={styles.statsText}>🧣 Least Worn: {stats.leastWorn}</Text>
+          <View style={{ marginBottom: 5 }}>
+            <Text style={styles.statsText}>
+              👕 Total Items: {stats.totalItems}
+            </Text>
+          </View>
+          <View style={{ marginBottom: 5 }}>
+            <Text style={styles.statsText}>🔥 Most Worn: {stats.mostWorn}</Text>
+          </View>
+          <View>
+            <Text style={styles.statsText}>
+              🧣 Least Worn: {stats.leastWorn}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -87,7 +95,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   statsTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 8 },
-  statsRow: { gap: 5 },
+  statsRow: { flexDirection: "column", justifyContent: "flex-start" },
   statsText: { fontSize: 14 },
   actionsContainer: { alignItems: "center", justifyContent: "center" },
   actionCard: {

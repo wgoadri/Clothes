@@ -1,6 +1,12 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useMemo } from "react";
 
-const WardrobeContext = createContext();
+const defaultValue = {
+  clothes: [],
+  addClothingItem: () => {},
+  stats: { totalItems: 0, mostWorn: "N/A", leastWorn: "N/A" },
+};
+
+const WardrobeContext = createContext(defaultValue);
 
 export const WardrobeProvider = ({ children }) => {
   const [clothes, setClothes] = useState([]);
@@ -9,11 +15,14 @@ export const WardrobeProvider = ({ children }) => {
     setClothes((prev) => [...prev, item]);
   };
 
-  const stats = {
-    totalItems: clothes.length,
-    mostWorn: clothes[0]?.name || "N/A",
-    leastWorn: clothes[clothes.length - 1]?.name || "N/A",
-  };
+  const stats = useMemo(
+    () => ({
+      totalItems: clothes.length,
+      mostWorn: clothes[0]?.name || "N/A",
+      leastWorn: clothes[clothes.length - 1]?.name || "N/A",
+    }),
+    [clothes]
+  );
 
   return (
     <WardrobeContext.Provider value={{ clothes, addClothingItem, stats }}>

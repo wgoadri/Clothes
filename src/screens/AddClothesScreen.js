@@ -5,27 +5,48 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
   Alert,
 } from "react-native";
-import { useWardrobe } from "../context/WardrobeContext";
+import { addDoc, collection } from "firebase/firestore";
+import * as ImagePicker from "expo-image-picker";
+import { auth, db } from "../services/firebase";
 
 export default function AddClothesScreen({ navigation }) {
-  const { addClothingItem } = useWardrobe();
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState(null);
 
-  const handleAdd = () => {
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri); // Expo SDK 49+ uses result.assets
+    }
+  };
+
+  const handleAdd = async () => {
     if (!name) return Alert.alert("Please enter a clothing name");
 
-    const newItem = {
-      id: Date.now().toString(),
-      name,
-      category: category || "Uncategorized",
-    };
+    const userId = auth.currentUser.uid;
 
-    addClothingItem(newItem);
+    await addDoc(collection(db, "users", userId, "wardrobe"), {
+      name,
+      category,
+      image,
+      usageHistore: [],
+    });
+
+    // reset form
     setName("");
     setCategory("");
+    setImage(null);
+
     Alert.alert("Success", "Item added to wardrobe!");
     navigation.navigate("Wardrobe");
   };
@@ -33,6 +54,7 @@ export default function AddClothesScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>👕 Add a Clothing Item</Text>
+
       <TextInput
         placeholder="Item name (e.g. Red T-shirt)"
         value={name}
@@ -45,6 +67,13 @@ export default function AddClothesScreen({ navigation }) {
         onChangeText={setCategory}
         style={styles.input}
       />
+
+      <TouchableOpacity style={styles.button} onPress={pickImage}>
+        <Text style={styles.buttonText}>Pick Image</Text>
+      </TouchableOpacity>
+
+      {image && <Image source={{ uri: image }} style={styles.preview} />}
+
       <TouchableOpacity style={styles.button} onPress={handleAdd}>
         <Text style={styles.buttonText}>Add Item</Text>
       </TouchableOpacity>
@@ -67,6 +96,8 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
+    marginBottom: 10,
   },
   buttonText: { color: "#fff", fontWeight: "bold" },
+  preview: { width: 100, height: 100, borderRadius: 10, marginVertical: 10 },
 });

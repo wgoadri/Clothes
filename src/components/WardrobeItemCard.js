@@ -4,7 +4,9 @@ import { View, Text, Image, StyleSheet } from "react-native";
 export default function WardrobeItemCard({ item }) {
   return (
     <View style={styles.card}>
-      <Image source={{ uri: item.imageURL }} style={styles.image} />
+      {item.image && (
+        <Image source={{ uri: item.image }} style={styles.image} />
+      )}
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.category}>{item.category}</Text>
     </View>
@@ -13,13 +15,17 @@ export default function WardrobeItemCard({ item }) {
 
 const styles = StyleSheet.create({
   card: {
-    margin: 5,
-    alignItems: "center",
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: "#f5f5f5",
+    padding: 12,
+    marginVertical: 6,
+    borderRadius: 10,
   },
-  image: { width: 100, height: 100, borderRadius: 8 },
-  name: { marginTop: 5, fontWeight: "bold" },
-  category: { color: "gray" },
+  name: { fontSize: 16, fontWeight: "600" },
+  category: { fontSize: 14, color: "#555" },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
 });
