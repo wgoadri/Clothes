@@ -11,15 +11,21 @@ import AuthScreen from "../screens/AuthScreen";
 
 const Stack = createNativeStackNavigator();
 
-<Stack.Navigator initialRouteName="Auth">
-  <Stack.Screen
-    name="Auth"
-    component={AuthScreen}
-    options={{ headerShown: false }}
-  />
-  <Stack.Screen name="Home" component={HomeScreen} />
-  <Stack.Screen name="AddClothes" component={AddClothesScreen} />
-  <Stack.Screen name="Wardrobe" component={WardrobeScreen} />
-  <Stack.Screen name="TrackUsage" component={TrackUsageScreen} />
-  <Stack.Screen name="Outfits" component={OutfitsScreen} />
-</Stack.Navigator>;
+export default function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Auth">
+        <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+          options={{ headerShown: true }}
+        />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="AddClothes" component={AddClothesScreen} />
+        <Stack.Screen name="Wardrobe" component={WardrobeScreen} />
+        <Stack.Screen name="TrackUsage" component={TrackUsageScreen} />
+        <Stack.Screen name="Outfits" component={OutfitsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}

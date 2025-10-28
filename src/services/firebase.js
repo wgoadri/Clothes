@@ -1,18 +1,18 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAnBo-irnmA30OvYCuQ7oV6FBfGfO8HMlU",
+  authDomain: "closet-app-df6be.firebaseapp.com",
+  projectId: "closet-app-df6be",
+  storageBucket: "closet-app-df6be.firebasestorage.app",
+  messagingSenderId: "297287821159",
+  appId: "1:297287821159:web:b272230285664fa2b3b1c2",
+  measurementId: "G-QKD28PDYLE",
 };
 
 const app = initializeApp(firebaseConfig);
-// export const db = getFirestore(app);
-// export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 // export const storage = getStorage(app);
