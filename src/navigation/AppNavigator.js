@@ -8,6 +8,7 @@ import WardrobeScreen from "../screens/WardrobeScreen";
 import TrackUsageScreen from "../screens/TrackUsageScreen";
 import OutfitsScreen from "../screens/OutfitsScreen";
 import AuthScreen from "../screens/AuthScreen";
+import OutfitCreatorScreen from "../screens/OutfitCreatorScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Wardrobe" component={WardrobeScreen} />
         <Stack.Screen name="TrackUsage" component={TrackUsageScreen} />
         <Stack.Screen name="Outfits" component={OutfitsScreen} />
+        <Stack.Screen name="OutfitCreator" component={OutfitCreatorScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

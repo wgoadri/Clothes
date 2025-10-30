@@ -1,16 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ScrollView,
 } from "react-native";
+import { auth } from "../services/firebase";
 import { Ionicons } from "@expo/vector-icons";
-import { useWardrobe } from "../context/WardrobeContext";
+import {
+  getUsageMetrics,
+  getWardrobeItems,
+  getOutfits,
+} from "../services/wardrobeService";
 
 export default function HomeScreen({ navigation }) {
-  const { stats } = useWardrobe();
+  const [metrics, setMetrics] = useState(null);
+  const [wardrobe, setWardrobe] = useState([]);
+  const [outfits, setOutfits] = useState([]);
+  const userId = auth.currentUser?.uid;
 
   const quickActions = [
     {
@@ -39,29 +48,70 @@ export default function HomeScreen({ navigation }) {
     </TouchableOpacity>
   );
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const [wardrobeData, outfitsData, usageData] = await Promise.all([
+        getWardrobeItems(userId),
+        getOutfits(userId),
+        getUsageMetrics(userId),
+      ]);
+
+      setWardrobe(wardrobeData);
+      setOutfits(outfitsData);
+
+      // Map IDs to names for display
+      const outfitMap = Object.fromEntries(
+        outfitsData.map((o) => [o.id, o.name])
+      );
+      const itemMap = Object.fromEntries(
+        wardrobeData.map((i) => [i.id, i.name])
+      );
+
+      const topOutfits = usageData.mostUsedOutfits.map((o) => ({
+        name: outfitMap[o.id] || "Unknown",
+        count: o.count,
+      }));
+
+      const topItems = usageData.mostUsedItems.map((i) => ({
+        name: itemMap[i.id] || "Unknown",
+        count: i.count,
+      }));
+
+      setMetrics({ topOutfits, topItems });
+    };
+
+    fetchData();
+  }, []);
+
+  if (!metrics) return <Text style={styles.loading}>Loading metrics...</Text>;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>👗 Closet Dashboard</Text>
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>📊 Usage Metrics</Text>
 
-      <View style={styles.statsContainer}>
-        <Text style={styles.statsTitle}>Your Wardrobe Summary</Text>
-        <View style={styles.statsRow}>
-          <View style={{ marginBottom: 5 }}>
-            <Text style={styles.statsText}>
-              👕 Total Items: {stats.totalItems}
+        <Text style={styles.sectionTitle}>Most Worn Outfits</Text>
+        {metrics.topOutfits.length === 0 ? (
+          <Text style={styles.empty}>No outfit logs yet.</Text>
+        ) : (
+          metrics.topOutfits.slice(0, 5).map((o, idx) => (
+            <Text key={idx} style={styles.item}>
+              {o.name} — {o.count} times
             </Text>
-          </View>
-          <View style={{ marginBottom: 5 }}>
-            <Text style={styles.statsText}>🔥 Most Worn: {stats.mostWorn}</Text>
-          </View>
-          <View>
-            <Text style={styles.statsText}>
-              🧣 Least Worn: {stats.leastWorn}
-            </Text>
-          </View>
-        </View>
-      </View>
+          ))
+        )}
 
+        <Text style={styles.sectionTitle}>Most Worn Clothes</Text>
+        {metrics.topItems.length === 0 ? (
+          <Text style={styles.empty}>No wardrobe usage yet.</Text>
+        ) : (
+          metrics.topItems.slice(0, 5).map((i, idx) => (
+            <Text key={idx} style={styles.item}>
+              {i.name} — {i.count} times
+            </Text>
+          ))
+        )}
+      </ScrollView>
       <Text style={styles.subHeader}>Quick Actions</Text>
       <FlatList
         data={quickActions}
@@ -76,6 +126,16 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  item: { fontSize: 16, marginBottom: 4 },
+  empty: { fontSize: 14, color: "#777", fontStyle: "italic" },
+  loading: { fontSize: 16, textAlign: "center", marginTop: 50 },
   header: {
     fontSize: 26,
     fontWeight: "bold",
