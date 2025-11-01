@@ -39,7 +39,11 @@ export default function AddClothesScreen({ navigation }) {
       name,
       category,
       image,
-      usageHistore: [],
+      usageHistory: [],
+        wearCount: 0,
+  lastWorn: null,
+    totalRating: 0,
+  createdAt: new Date().toISOString(),
     });
 
     // reset form

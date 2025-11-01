@@ -1,14 +1,18 @@
-// src/services/wardrobeService.js
-import { db } from "./firebase";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  doc, 
+  updateDoc, 
   deleteDoc,
-  updateDoc,
-  // getDownloadURL,
+  increment,
+  serverTimestamp,
+  query,
+  where,
+  orderBy
 } from "firebase/firestore";
+import { db } from "./firebase";
+import { ref, uploadBytes } from "firebase/storage";
 
 /* WARDROBE ITEMS */
 
@@ -39,19 +43,11 @@ export const getOutfits = async (userId) => {
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 };
 
-// Delete outfit
-export const deleteOutfit = async (userId, outfitId) => {
-  const outfitRef = doc(db, "users", userId, "outfits", outfitId);
-  await deleteDoc(outfitRef);
-};
-
 // Toggle favorite status
 export const toggleFavoriteOutfit = async (userId, outfitId, currentStatus) => {
   const outfitRef = doc(db, "users", userId, "outfits", outfitId);
   await updateDoc(outfitRef, { favorite: !currentStatus });
 };
-
-import { ref, uploadBytes } from "firebase/storage";
 
 /* OUTFIT USAGE LOGS */
 
@@ -123,4 +119,139 @@ export const getUsageMetrics = async (userId) => {
     .map(([id, count]) => ({ id, count }));
 
   return { logs, mostUsedOutfits, mostUsedItems };
+};
+
+// Log daily outfit
+export const logDailyOutfit = async (userId, logData) => {
+  try {
+    const dailyLogRef = collection(db, "users", userId, "dailyLogs");
+    
+    const logDoc = await addDoc(dailyLogRef, {
+      ...logData,
+      timestamp: serverTimestamp(),
+      createdAt: new Date().toISOString()
+    });
+
+    if (logData.items && logData.items.length > 0) {
+      await updateUsageStats(userId, logData.items, logData.rating);
+    }
+
+    return logDoc.id;
+  } catch (error) {
+    console.error("Error logging daily outfit:", error);
+    throw error;
+  }
+};
+
+// Update clothes stats
+const updateUsageStats = async (userId, itemIds, rating) => {
+  try {
+    const promises = itemIds.map(async (itemId) => {
+      const itemRef = doc(db, "users", userId, "wardrobe", itemId);
+      
+      await updateDoc(itemRef, {
+        wearCount: increment(1),
+        lastWorn: new Date().toISOString(),
+        totalRating: increment(rating || 0),
+        usageHistory: increment(1)
+      });
+    });
+
+    await Promise.all(promises);
+  } catch (error) {
+    console.error("Error updating usage stats:", error);
+  }
+};
+
+export const getDailyLogs = async (userId, limit = 30) => {
+  try {
+    const logsRef = collection(db, "users", userId, "dailyLogs");
+    const q = query(logsRef, orderBy("timestamp", "desc"));
+    
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Error fetching daily logs:", error);
+    return [];
+  }
+};
+
+export const getTodayOutfit = async (userId) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const logsRef = collection(db, "users", userId, "dailyLogs");
+    const q = query(logsRef, where("date", "==", today));
+    
+    const snapshot = await getDocs(q);
+    return snapshot.docs.length > 0 ? {
+      id: snapshot.docs[0].id,
+      ...snapshot.docs[0].data()
+    } : null;
+  } catch (error) {
+    console.error("Error checking today's outfit:", error);
+    return null;
+  }
+};
+
+
+export const deleteOutfit = async (userId, outfitId) => {
+  try {
+    const outfitRef = doc(db, "users", userId, "outfits", outfitId);
+    await deleteDoc(outfitRef);
+  } catch (error) {
+    console.error("Error deleting outfit:", error);
+    throw error;
+  }
+};
+
+export const toggleOutfitFavorite = async (userId, outfitId, favorite) => {
+  try {
+    const outfitRef = doc(db, "users", userId, "outfits", outfitId);
+    await updateDoc(outfitRef, { favorite });
+  } catch (error) {
+    console.error("Error toggling outfit favorite:", error);
+    throw error;
+  }
+};
+
+export const updateDailyLog = async (userId, logId, updateData) => {
+  try {
+    const logRef = doc(db, "users", userId, "dailyLogs", logId);
+    await updateDoc(logRef, {
+      ...updateData,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error updating daily log:", error);
+    throw error;
+  }
+};
+
+export const getItemStats = async (userId, itemId) => {
+  try {
+    const logsRef = collection(db, "users", userId, "dailyLogs");
+    const q = query(logsRef, where("items", "array-contains", itemId));
+    
+    const snapshot = await getDocs(q);
+    const logs = snapshot.docs.map(doc => doc.data());
+    
+    const totalWears = logs.length;
+    const totalRating = logs.reduce((sum, log) => sum + (log.rating || 0), 0);
+    const averageRating = totalWears > 0 ? totalRating / totalWears : 0;
+    
+    const occasions = [...new Set(logs.map(log => log.occasion).filter(Boolean))];
+    
+    return {
+      totalWears,
+      averageRating: Math.round(averageRating * 10) / 10,
+      occasions,
+      lastWorn: logs.length > 0 ? logs[0].date : null
+    };
+  } catch (error) {
+    console.error("Error getting item stats:", error);
+    return { totalWears: 0, averageRating: 0, occasions: [], lastWorn: null };
+  }
 };

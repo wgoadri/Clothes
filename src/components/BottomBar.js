@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet, Text, Modal } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 export default function BottomBar({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -54,20 +54,40 @@ export default function BottomBar({ navigation }) {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>What do you want to do?</Text>
 
+            {/* 🆕 Option to log today's outfit */}
             <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => handleOption("TrackUsage")}
+              style={[styles.modalButton, styles.primaryButton]}
+              onPress={() => handleOption("DailyOutfitLogger")}
             >
-              <Text style={styles.modalButtonText}>Log Today's Outfit</Text>
+              <View style={styles.buttonContent}>
+                <MaterialIcons name="today" size={20} color="#fff" />
+                <Text style={styles.modalButtonText}>Log Today's Outfit</Text>
+              </View>
             </TouchableOpacity>
 
+            {/* Option pour ajouter un vêtement */}
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => handleOption("AddClothes")}
+            >
+              <View style={styles.buttonContent}>
+                <Ionicons name="shirt-outline" size={20} color="#fff" />
+                <Text style={styles.modalButtonText}>Add New Item</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Option to create outfit */}
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => handleOption("OutfitCreator")}
             >
+              <View style={styles.buttonContent}>
+                <MaterialIcons name="style" size={20} color="#fff" />
               <Text style={styles.modalButtonText}>Create New Outfit</Text>
+              </View>
             </TouchableOpacity>
 
+            {/* Bouton Cancel */}
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={() => setModalVisible(false)}
@@ -123,21 +143,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    width: 280,
+    width: 300,
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
   },
-  modalTitle: { fontSize: 18, fontWeight: "600", marginBottom: 16 },
+  modalTitle: { 
+    fontSize: 18, 
+    fontWeight: "600", 
+    marginBottom: 20,
+    textAlign: "center",
+  },
   modalButton: {
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: 14,
     backgroundColor: "#007AFF",
     borderRadius: 8,
     marginVertical: 6,
     alignItems: "center",
   },
-  modalButtonText: { color: "#fff", fontWeight: "600" },
-  cancelButton: { backgroundColor: "#f0f0f0" },
+  primaryButton: {
+    backgroundColor: "#28a745",
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalButtonText: { 
+    color: "#fff", 
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+  cancelButton: { 
+    backgroundColor: "#f0f0f0",
+    marginTop: 10,
+  },
 });
