@@ -1,8 +1,14 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 
-export default function OutfitItemCard({ outfit, onToggleFavorite, onDelete, onWearToday }) {
+export default function OutfitItemCard({
+  outfit,
+  onToggleFavorite,
+  onDelete,
+  onWearToday,
+  onPress,
+}) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -19,11 +25,11 @@ export default function OutfitItemCard({ outfit, onToggleFavorite, onDelete, onW
           )}
 
           <TouchableOpacity onPress={() => onToggleFavorite(outfit)}>
-            <AntDesign
-              name={outfit.favorite ? "heart" : "hearto"}
-              size={20}
-              color={outfit.favorite ? "#e63946" : "#555"}
-            />
+            {outfit.favorite ? (
+              <AntDesign name="heart" size={20} color="#e63946" />
+            ) : (
+              <FontAwesome name="heart-o" size={20} color="#555" />
+            )}
           </TouchableOpacity>
           <TouchableOpacity onPress={() => onDelete(outfit)}>
             <MaterialIcons name="delete" size={22} color="#999" />
