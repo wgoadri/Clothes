@@ -18,45 +18,67 @@ import { auth, db } from "../services/firebase";
 import BottomBar from "../components/BottomBar";
 
 const CATEGORIES = [
-  { id: 'tops', name: 'Tops', icon: 'shirt-outline' },
-  { id: 'bottoms', name: 'Bottoms', icon: 'fitness-outline' },
-  { id: 'dresses', name: 'Dresses', icon: 'woman-outline' },
-  { id: 'outerwear', name: 'Outerwear', icon: 'jacket-outline' },
-  { id: 'shoes', name: 'Shoes', icon: 'footsteps-outline' },
-  { id: 'accessories', name: 'Accessories', icon: 'watch-outline' },
-  { id: 'underwear', name: 'Underwear', icon: 'body-outline' },
-  { id: 'activewear', name: 'Activewear', icon: 'fitness-outline' },
+  { id: "tops", name: "Tops", icon: "shirt-outline" },
+  { id: "bottoms", name: "Bottoms", icon: "body-outline" },
+  { id: "dresses", name: "Dresses", icon: "woman-outline" },
+  { id: "outerwear", name: "Outerwear", icon: "rainy-outline" },
+  { id: "shoes", name: "Shoes", icon: "footsteps-outline" },
+  { id: "accessories", name: "Accessories", icon: "watch-outline" },
+  { id: "underwear", name: "Underwear", icon: "body-outline" },
+  { id: "activewear", name: "Activewear", icon: "fitness-outline" },
 ];
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '34', '36', '38', '40', '42', '44', '46'];
+const SIZES = [
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "XXL",
+  "34",
+  "36",
+  "38",
+  "40",
+  "42",
+  "44",
+  "46",
+];
 
 const COLORS = [
-  { name: 'Black', hex: '#000000' },
-  { name: 'White', hex: '#FFFFFF' },
-  { name: 'Gray', hex: '#808080' },
-  { name: 'Navy', hex: '#000080' },
-  { name: 'Blue', hex: '#0066CC' },
-  { name: 'Red', hex: '#FF0000' },
-  { name: 'Green', hex: '#008000' },
-  { name: 'Yellow', hex: '#FFFF00' },
-  { name: 'Pink', hex: '#FFC0CB' },
-  { name: 'Purple', hex: '#800080' },
-  { name: 'Brown', hex: '#8B4513' },
-  { name: 'Orange', hex: '#FFA500' },
-  { name: 'Beige', hex: '#F5F5DC' },
-  { name: 'Burgundy', hex: '#800020' },
+  { name: "Black", hex: "#000000" },
+  { name: "White", hex: "#FFFFFF" },
+  { name: "Gray", hex: "#808080" },
+  { name: "Navy", hex: "#000080" },
+  { name: "Blue", hex: "#0066CC" },
+  { name: "Red", hex: "#FF0000" },
+  { name: "Green", hex: "#008000" },
+  { name: "Yellow", hex: "#FFFF00" },
+  { name: "Pink", hex: "#FFC0CB" },
+  { name: "Purple", hex: "#800080" },
+  { name: "Brown", hex: "#8B4513" },
+  { name: "Orange", hex: "#FFA500" },
+  { name: "Beige", hex: "#F5F5DC" },
+  { name: "Burgundy", hex: "#800020" },
 ];
 
 const SEASONS = [
-  { id: 'spring', name: 'Spring', icon: 'flower-outline' },
-  { id: 'summer', name: 'Summer', icon: 'sunny-outline' },
-  { id: 'autumn', name: 'Autumn', icon: 'leaf-outline' },
-  { id: 'winter', name: 'Winter', icon: 'snow-outline' },
-  { id: 'all', name: 'All Seasons', icon: 'calendar-outline' },
+  { id: "spring", name: "Spring", icon: "flower-outline" },
+  { id: "summer", name: "Summer", icon: "sunny-outline" },
+  { id: "autumn", name: "Autumn", icon: "leaf-outline" },
+  { id: "winter", name: "Winter", icon: "snow-outline" },
+  { id: "all", name: "All Seasons", icon: "calendar-outline" },
 ];
 
 const OCCASIONS = [
-  'Casual', 'Work', 'Formal', 'Party', 'Sport', 'Beach', 'Travel', 'Date', 'Wedding'
+  "Casual",
+  "Work",
+  "Formal",
+  "Party",
+  "Sport",
+  "Beach",
+  "Travel",
+  "Date",
+  "Wedding",
 ];
 
 export default function AddClothesScreen({ navigation }) {
@@ -64,7 +86,7 @@ export default function AddClothesScreen({ navigation }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
-  
+
   // Extra fields
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState("");
@@ -77,7 +99,7 @@ export default function AddClothesScreen({ navigation }) {
   const [occasions, setOccasions] = useState([]);
   const [notes, setNotes] = useState("");
   const [careInstructions, setCareInstructions] = useState("");
-  
+
   // Modals
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [colorModalVisible, setColorModalVisible] = useState(false);
@@ -87,26 +109,25 @@ export default function AddClothesScreen({ navigation }) {
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please grant camera roll permissions to add photos.');
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission needed",
+        "Please grant camera roll permissions to add photos."
+      );
       return;
     }
 
-    Alert.alert(
-      "Select Image",
-      "Choose how you want to add an image",
-      [
-        { text: "Camera", onPress: () => openCamera() },
-        { text: "Gallery", onPress: () => openGallery() },
-        { text: "Cancel", style: "cancel" }
-      ]
-    );
+    Alert.alert("Select Image", "Choose how you want to add an image", [
+      { text: "Camera", onPress: () => openCamera() },
+      { text: "Gallery", onPress: () => openGallery() },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   const openCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please grant camera permissions.');
+    if (status !== "granted") {
+      Alert.alert("Permission needed", "Please grant camera permissions.");
       return;
     }
 
@@ -135,17 +156,17 @@ export default function AddClothesScreen({ navigation }) {
   };
 
   const toggleSeason = (seasonId) => {
-    setSeasons(prev => 
-      prev.includes(seasonId) 
-        ? prev.filter(s => s !== seasonId)
+    setSeasons((prev) =>
+      prev.includes(seasonId)
+        ? prev.filter((s) => s !== seasonId)
         : [...prev, seasonId]
     );
   };
 
   const toggleOccasion = (occasion) => {
-    setOccasions(prev => 
-      prev.includes(occasion) 
-        ? prev.filter(o => o !== occasion)
+    setOccasions((prev) =>
+      prev.includes(occasion)
+        ? prev.filter((o) => o !== occasion)
         : [...prev, occasion]
     );
   };
@@ -177,7 +198,7 @@ export default function AddClothesScreen({ navigation }) {
         name: name.trim(),
         category,
         image,
-        
+
         // Extra fields
         brand: brand.trim(),
         price: price ? parseFloat(price) : null,
@@ -190,17 +211,17 @@ export default function AddClothesScreen({ navigation }) {
         occasions,
         notes: notes.trim(),
         careInstructions: careInstructions.trim(),
-        
+
         // Tracking
         usageHistory: [],
         wearCount: 0,
         lastWorn: null,
         totalRating: 0,
         createdAt: new Date().toISOString(),
-        
+
         // Metadata
         isActive: true,
-        tags: [], 
+        tags: [],
       };
 
       await addDoc(collection(db, "users", userId, "wardrobe"), itemData);
@@ -208,14 +229,13 @@ export default function AddClothesScreen({ navigation }) {
       // Reset form
       resetForm();
 
-      Alert.alert(
-        "Success! 🎉", 
-        "Item added to your wardrobe!",
-        [
-          { text: "Add Another", onPress: () => {} },
-          { text: "View Wardrobe", onPress: () => navigation.navigate("Wardrobe") }
-        ]
-      );
+      Alert.alert("Success! 🎉", "Item added to your wardrobe!", [
+        { text: "Add Another", onPress: () => {} },
+        {
+          text: "View Wardrobe",
+          onPress: () => navigation.navigate("Wardrobe"),
+        },
+      ]);
     } catch (error) {
       console.error("Error adding item:", error);
       Alert.alert("Error", "Failed to add item. Please try again.");
@@ -256,7 +276,7 @@ export default function AddClothesScreen({ navigation }) {
               <TouchableOpacity
                 style={[
                   styles.modalItem,
-                  category === item.name && styles.selectedModalItem
+                  category === item.name && styles.selectedModalItem,
                 ]}
                 onPress={() => {
                   setCategory(item.name);
@@ -294,14 +314,16 @@ export default function AddClothesScreen({ navigation }) {
               <TouchableOpacity
                 style={[
                   styles.colorItem,
-                  color === item.name && styles.selectedColorItem
+                  color === item.name && styles.selectedColorItem,
                 ]}
                 onPress={() => {
                   setColor(item.name);
                   setColorModalVisible(false);
                 }}
               >
-                <View style={[styles.colorCircle, { backgroundColor: item.hex }]} />
+                <View
+                  style={[styles.colorCircle, { backgroundColor: item.hex }]}
+                />
                 <Text style={styles.colorName}>{item.name}</Text>
               </TouchableOpacity>
             )}
@@ -329,17 +351,21 @@ export default function AddClothesScreen({ navigation }) {
               <TouchableOpacity
                 style={[
                   styles.sizeItem,
-                  size === item && styles.selectedSizeItem
+                  size === item && styles.selectedSizeItem,
                 ]}
                 onPress={() => {
                   setSize(item);
                   setSizeModalVisible(false);
                 }}
               >
-                <Text style={[
-                  styles.sizeText,
-                  size === item && styles.selectedSizeText
-                ]}>{item}</Text>
+                <Text
+                  style={[
+                    styles.sizeText,
+                    size === item && styles.selectedSizeText,
+                  ]}
+                >
+                  {item}
+                </Text>
               </TouchableOpacity>
             )}
           />
@@ -350,7 +376,10 @@ export default function AddClothesScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.title}>👕 Add New Item</Text>
 
         {/* Image Section */}
@@ -366,7 +395,7 @@ export default function AddClothesScreen({ navigation }) {
             )}
           </TouchableOpacity>
           {image && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.removeImageButton}
               onPress={() => setImage(null)}
             >
@@ -378,7 +407,7 @@ export default function AddClothesScreen({ navigation }) {
         {/* Basic Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>📝 Basic Information</Text>
-          
+
           <TextInput
             placeholder="Item name (e.g. Red Cotton T-shirt)"
             value={name}
@@ -391,7 +420,9 @@ export default function AddClothesScreen({ navigation }) {
             style={styles.selectButton}
             onPress={() => setCategoryModalVisible(true)}
           >
-            <Text style={[styles.selectButtonText, !category && styles.placeholder]}>
+            <Text
+              style={[styles.selectButtonText, !category && styles.placeholder]}
+            >
               {category || "Select Category"}
             </Text>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="#666" />
@@ -409,7 +440,7 @@ export default function AddClothesScreen({ navigation }) {
         {/* Details */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🏷️ Details</Text>
-          
+
           <View style={styles.row}>
             <View style={styles.halfWidth}>
               <TextInput
@@ -425,10 +456,16 @@ export default function AddClothesScreen({ navigation }) {
                 style={styles.selectButton}
                 onPress={() => setSizeModalVisible(true)}
               >
-                <Text style={[styles.selectButtonText, !size && styles.placeholder]}>
-                                    {size || "Size"}
+                <Text
+                  style={[styles.selectButtonText, !size && styles.placeholder]}
+                >
+                  {size || "Size"}
                 </Text>
-                <MaterialIcons name="keyboard-arrow-down" size={24} color="#666" />
+                <MaterialIcons
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="#666"
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -439,12 +476,19 @@ export default function AddClothesScreen({ navigation }) {
           >
             <View style={styles.colorPreview}>
               {color && (
-                <View style={[
-                  styles.colorDot, 
-                  { backgroundColor: COLORS.find(c => c.name === color)?.hex || '#ccc' }
-                ]} />
+                <View
+                  style={[
+                    styles.colorDot,
+                    {
+                      backgroundColor:
+                        COLORS.find((c) => c.name === color)?.hex || "#ccc",
+                    },
+                  ]}
+                />
               )}
-              <Text style={[styles.selectButtonText, !color && styles.placeholder]}>
+              <Text
+                style={[styles.selectButtonText, !color && styles.placeholder]}
+              >
                 {color || "Select Color"}
               </Text>
             </View>
@@ -463,7 +507,7 @@ export default function AddClothesScreen({ navigation }) {
         {/* Purchase Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🛍️ Purchase Info</Text>
-          
+
           <TextInput
             placeholder="Purchase date (e.g. 2024-01-15)"
             value={purchaseDate}
@@ -489,19 +533,21 @@ export default function AddClothesScreen({ navigation }) {
                 key={season.id}
                 style={[
                   styles.chip,
-                  seasons.includes(season.id) && styles.selectedChip
+                  seasons.includes(season.id) && styles.selectedChip,
                 ]}
                 onPress={() => toggleSeason(season.id)}
               >
-                <Ionicons 
-                  name={season.icon} 
-                  size={16} 
-                  color={seasons.includes(season.id) ? "#fff" : "#007AFF"} 
+                <Ionicons
+                  name={season.icon}
+                  size={16}
+                  color={seasons.includes(season.id) ? "#fff" : "#007AFF"}
                 />
-                <Text style={[
-                  styles.chipText,
-                  seasons.includes(season.id) && styles.selectedChipText
-                ]}>
+                <Text
+                  style={[
+                    styles.chipText,
+                    seasons.includes(season.id) && styles.selectedChipText,
+                  ]}
+                >
                   {season.name}
                 </Text>
               </TouchableOpacity>
@@ -518,14 +564,16 @@ export default function AddClothesScreen({ navigation }) {
                 key={occasion}
                 style={[
                   styles.chip,
-                  occasions.includes(occasion) && styles.selectedChip
+                  occasions.includes(occasion) && styles.selectedChip,
                 ]}
                 onPress={() => toggleOccasion(occasion)}
               >
-                <Text style={[
-                  styles.chipText,
-                  occasions.includes(occasion) && styles.selectedChipText
-                ]}>
+                <Text
+                  style={[
+                    styles.chipText,
+                    occasions.includes(occasion) && styles.selectedChipText,
+                  ]}
+                >
                   {occasion}
                 </Text>
               </TouchableOpacity>
@@ -590,19 +638,19 @@ export default function AddClothesScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#fff" 
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
   },
-  scrollContainer: { 
-    flex: 1, 
-    padding: 20 
+  scrollContainer: {
+    flex: 1,
+    padding: 20,
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: "bold", 
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
     marginBottom: 24,
-    textAlign: "center"
+    textAlign: "center",
   },
 
   // Image Section
