@@ -1,7 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage"; // Optional, if you plan to use image uploads
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAnBo-irnmA30OvYCuQ7oV6FBfGfO8HMlU",
   authDomain: "closet-app-df6be.firebaseapp.com",
@@ -12,7 +15,16 @@ const firebaseConfig = {
   measurementId: "G-QKD28PDYLE",
 };
 
+// Initialize the app
 const app = initializeApp(firebaseConfig);
+
+// Use persistent Auth for React Native
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
+
+// Firestore
 export const db = getFirestore(app);
-export const auth = getAuth(app);
+
+// Optional: Firebase Storage for image uploads
 // export const storage = getStorage(app);

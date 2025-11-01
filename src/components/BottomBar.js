@@ -14,36 +14,38 @@ export default function BottomBar({ navigation }) {
 
   return (
     <>
-    <View style={styles.container}>
-      {/* Leftmost icon — Home */}
-      <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-        <Ionicons name="home-outline" size={26} color="#333" />
-      </TouchableOpacity>
+      <View style={styles.container}>
+        {/* Leftmost icon — Home */}
+        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+          <Ionicons name="home-outline" size={26} color="#333" />
+        </TouchableOpacity>
 
-      {/* Wardrobe */}
-      <TouchableOpacity onPress={() => navigation.navigate("Wardrobe")}>
-        <Ionicons name="shirt-outline" size={26} color="#333" />
-      </TouchableOpacity>
+        {/* Wardrobe */}
+        <TouchableOpacity onPress={() => navigation.navigate("Wardrobe")}>
+          <Ionicons name="shirt-outline" size={26} color="#333" />
+        </TouchableOpacity>
 
-      {/* Center circular Add button */}
-      <View style={styles.centerButtonContainer}>
-        <TouchableOpacity style={styles.centerButton} onPress={handleAddPress}>
-          <Ionicons name="add" size={32} color="#fff" />
+        {/* Center circular Add button */}
+        <View style={styles.centerButtonContainer}>
+          <TouchableOpacity
+            style={styles.centerButton}
+            onPress={handleAddPress}
+          >
+            <Ionicons name="add" size={32} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Outfits */}
+        <TouchableOpacity onPress={() => navigation.navigate("Outfits")}>
+          <Ionicons name="star-outline" size={26} color="#333" />
+        </TouchableOpacity>
+
+        {/* Rightmost icon — Track details */}
+        <TouchableOpacity onPress={() => navigation.navigate("TrackUsage")}>
+          <Ionicons name="calendar-outline" size={26} color="#333" />
         </TouchableOpacity>
       </View>
 
-      {/* Outfits */}
-      <TouchableOpacity onPress={() => navigation.navigate("Outfits")}>
-        <Ionicons name="star-outline" size={26} color="#333" />
-      </TouchableOpacity>
-
-      {/* Rightmost icon — Track details */}
-      <TouchableOpacity onPress={() => navigation.navigate("TrackUsage")}>
-        <Ionicons name="calendar-outline" size={26} color="#333" />
-      </TouchableOpacity>
-    </View>
-
-    
       <Modal
         visible={modalVisible}
         transparent
@@ -54,7 +56,7 @@ export default function BottomBar({ navigation }) {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>What do you want to do?</Text>
 
-            {/* 🆕 Option to log today's outfit */}
+            {/* Option to log today's outfit */}
             <TouchableOpacity
               style={[styles.modalButton, styles.primaryButton]}
               onPress={() => handleOption("DailyOutfitLogger")}
@@ -65,7 +67,7 @@ export default function BottomBar({ navigation }) {
               </View>
             </TouchableOpacity>
 
-            {/* Option pour ajouter un vêtement */}
+            {/* Option to add clothes */}
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => handleOption("AddClothes")}
@@ -83,7 +85,7 @@ export default function BottomBar({ navigation }) {
             >
               <View style={styles.buttonContent}>
                 <MaterialIcons name="style" size={20} color="#fff" />
-              <Text style={styles.modalButtonText}>Create New Outfit</Text>
+                <Text style={styles.modalButtonText}>Create New Outfit</Text>
               </View>
             </TouchableOpacity>
 
@@ -149,9 +151,9 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
   },
-  modalTitle: { 
-    fontSize: 18, 
-    fontWeight: "600", 
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
     marginBottom: 20,
     textAlign: "center",
   },
@@ -171,12 +173,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  modalButtonText: { 
-    color: "#fff", 
+  modalButtonText: {
+    color: "#fff",
     fontWeight: "600",
     marginLeft: 8,
   },
-  cancelButton: { 
+  cancelButton: {
     backgroundColor: "#f0f0f0",
     marginTop: 10,
   },

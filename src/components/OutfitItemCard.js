@@ -2,12 +2,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
-export default function OutfitItemCard({ 
-  outfit, 
-  onToggleFavorite, 
-  onDelete, 
-  onWearToday
-}) {
+export default function OutfitItemCard({ outfit, onToggleFavorite, onDelete, onWearToday }) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -15,14 +10,14 @@ export default function OutfitItemCard({
         <View style={styles.actions}>
           {/* Wear Today */}
           {onWearToday && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => onWearToday(outfit)}
               style={styles.wearTodayButton}
             >
               <MaterialIcons name="today" size={20} color="#007AFF" />
             </TouchableOpacity>
           )}
-          
+
           <TouchableOpacity onPress={() => onToggleFavorite(outfit)}>
             <AntDesign
               name={outfit.favorite ? "heart" : "hearto"}
@@ -48,9 +43,7 @@ export default function OutfitItemCard({
       {/* Display usage stats if available */}
       {outfit.wearCount > 0 && (
         <View style={styles.usageInfo}>
-          <Text style={styles.usageText}>
-            Worn {outfit.wearCount} times
-          </Text>
+          <Text style={styles.usageText}>Worn {outfit.wearCount} times</Text>
           {outfit.lastWorn && (
             <Text style={styles.lastWornText}>
               Last: {new Date(outfit.lastWorn).toLocaleDateString()}

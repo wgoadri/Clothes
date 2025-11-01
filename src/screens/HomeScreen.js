@@ -8,7 +8,11 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { auth } from "../services/firebase";
 import {
   getUsageMetrics,
@@ -29,49 +33,48 @@ export default function HomeScreen({ navigation }) {
     fetchData();
   }, []);
 
-  
-    const fetchData = async () => {
-    const [wardrobeData, outfitsData, usageData, todayData] = await Promise.all([
+  const fetchData = async () => {
+    const [wardrobeData, outfitsData, usageData, todayData] = await Promise.all(
+      [
         getWardrobeItems(userId),
         getOutfits(userId),
         getUsageMetrics(userId),
-      getTodayOutfit(userId),
-      ]);
+        getTodayOutfit(userId),
+      ]
+    );
 
-      setWardrobe(wardrobeData);
-      setOutfits(outfitsData);
+    setWardrobe(wardrobeData);
+    setOutfits(outfitsData);
     setTodayOutfit(todayData);
 
-      const outfitMap = Object.fromEntries(
-        outfitsData.map((o) => [o.id, o.name])
-      );
-      const itemMap = Object.fromEntries(
-        wardrobeData.map((i) => [i.id, i.name])
-      );
+    const outfitMap = Object.fromEntries(
+      outfitsData.map((o) => [o.id, o.name])
+    );
+    const itemMap = Object.fromEntries(wardrobeData.map((i) => [i.id, i.name]));
 
-      const topOutfits = usageData.mostUsedOutfits.map((o) => ({
-        name: outfitMap[o.id] || "Unknown",
-        count: o.count,
-      }));
+    const topOutfits = usageData.mostUsedOutfits.map((o) => ({
+      name: outfitMap[o.id] || "Unknown",
+      count: o.count,
+    }));
 
-      const topItems = usageData.mostUsedItems.map((i) => ({
-        name: itemMap[i.id] || "Unknown",
-        count: i.count,
-      }));
+    const topItems = usageData.mostUsedItems.map((i) => ({
+      name: itemMap[i.id] || "Unknown",
+      count: i.count,
+    }));
 
-    setMetrics({ 
-      topOutfits, 
-      topItems, 
+    setMetrics({
+      topOutfits,
+      topItems,
       totalLogs: usageData.totalLogs,
-      lastLogDate: usageData.lastLogDate 
+      lastLogDate: usageData.lastLogDate,
     });
-    };
+  };
 
   // Composant pour le widget "Today's Outfit"
   const TodayOutfitWidget = () => {
     if (todayOutfit) {
       return (
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.todayWidget}
           onPress={() => navigation.navigate("DailyOutfitLogger")}
         >
@@ -99,7 +102,7 @@ export default function HomeScreen({ navigation }) {
     }
 
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.todayWidgetEmpty}
         onPress={() => navigation.navigate("DailyOutfitLogger")}
       >
@@ -115,7 +118,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollContainer}>
-        <Text style={styles.title}>👋 Welcome back!</Text>
+        <Text style={styles.title}>My Closet</Text>
 
         {/* Widget Today's Outfit */}
         <TodayOutfitWidget />
@@ -165,23 +168,27 @@ export default function HomeScreen({ navigation }) {
         {/* Quick Actions */}
         <Text style={styles.sectionTitle}>⚡ Quick Actions</Text>
         <View style={styles.quickActions}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate("AddClothes")}
           >
             <MaterialIcons name="add" size={24} color="#007AFF" />
             <Text style={styles.actionText}>Add Item</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate("OutfitCreator")}
           >
-            <MaterialCommunityIcons name="tshirt-crew" size={24} color="#007AFF" />
+            <MaterialCommunityIcons
+              name="tshirt-crew"
+              size={24}
+              color="#007AFF"
+            />
             <Text style={styles.actionText}>Create Outfit</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate("TrackUsage")}
           >
@@ -201,7 +208,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   scrollContainer: { flex: 1, padding: 16 },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-  
+
   // Today's Outfit Widget
   todayWidget: {
     backgroundColor: "#f8f9fa",
@@ -322,9 +329,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#007AFF",
   },
-  empty: { 
-    fontSize: 14, 
-    color: "#777", 
+  empty: {
+    fontSize: 14,
+    color: "#777",
     fontStyle: "italic",
     textAlign: "center",
     padding: 16,
