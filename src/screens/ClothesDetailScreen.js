@@ -44,7 +44,7 @@ export default function ClothesDetailScreen({ route, navigation }) {
         ...editedItem,
         updatedAt: new Date().toISOString(),
       });
-      
+
       setCurrentItem(editedItem);
       setEditModalVisible(false);
       Alert.alert("Success", "Item updated successfully!");
@@ -95,21 +95,27 @@ export default function ClothesDetailScreen({ route, navigation }) {
           <TextInput
             style={styles.editInput}
             value={editedItem.name}
-            onChangeText={(text) => setEditedItem({...editedItem, name: text})}
+            onChangeText={(text) =>
+              setEditedItem({ ...editedItem, name: text })
+            }
             placeholder="Item name"
           />
-          
+
           <TextInput
             style={styles.editInput}
             value={editedItem.brand || ""}
-            onChangeText={(text) => setEditedItem({...editedItem, brand: text})}
+            onChangeText={(text) =>
+              setEditedItem({ ...editedItem, brand: text })
+            }
             placeholder="Brand"
           />
 
           <TextInput
             style={styles.editInput}
             value={editedItem.price?.toString() || ""}
-            onChangeText={(text) => setEditedItem({...editedItem, price: parseFloat(text) || null})}
+            onChangeText={(text) =>
+              setEditedItem({ ...editedItem, price: parseFloat(text) || null })
+            }
             placeholder="Price"
             keyboardType="numeric"
           />
@@ -117,7 +123,9 @@ export default function ClothesDetailScreen({ route, navigation }) {
           <TextInput
             style={[styles.editInput, styles.textArea]}
             value={editedItem.notes || ""}
-            onChangeText={(text) => setEditedItem({...editedItem, notes: text})}
+            onChangeText={(text) =>
+              setEditedItem({ ...editedItem, notes: text })
+            }
             placeholder="Notes"
             multiline
             numberOfLines={3}
@@ -146,31 +154,38 @@ export default function ClothesDetailScreen({ route, navigation }) {
     );
   };
 
-  const averageRating = currentItem.wearCount > 0 && currentItem.totalRating > 0 
-    ? (currentItem.totalRating / currentItem.wearCount).toFixed(1) 
-    : "No ratings yet";
+  const averageRating =
+    currentItem.wearCount > 0 && currentItem.totalRating > 0
+      ? (currentItem.totalRating / currentItem.wearCount).toFixed(1)
+      : "No ratings yet";
 
-  const costPerWear = currentItem.price && currentItem.wearCount > 0 
-    ? `€${(currentItem.price / currentItem.wearCount).toFixed(2)}` 
-    : currentItem.price ? `€${currentItem.price} (unworn)` : "No price set";
+  const costPerWear =
+    currentItem.price && currentItem.wearCount > 0
+      ? `€${(currentItem.price / currentItem.wearCount).toFixed(2)}`
+      : currentItem.price
+        ? `€${currentItem.price} (unworn)`
+        : "No price set";
 
-  const lastWorn = currentItem.lastWorn 
-    ? new Date(currentItem.lastWorn).toLocaleDateString() 
+  const lastWorn = currentItem.lastWorn
+    ? new Date(currentItem.lastWorn).toLocaleDateString()
     : "Never worn";
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header with image */}
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
             <MaterialIcons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.editButton}
             onPress={() => setEditModalVisible(true)}
           >
@@ -181,7 +196,10 @@ export default function ClothesDetailScreen({ route, navigation }) {
         {/* Main Image */}
         <View style={styles.imageContainer}>
           {currentItem.image ? (
-            <Image source={{ uri: currentItem.image }} style={styles.mainImage} />
+            <Image
+              source={{ uri: currentItem.image }}
+              style={styles.mainImage}
+            />
           ) : (
             <View style={styles.imagePlaceholder}>
               <MaterialIcons name="checkroom" size={80} color="#ccc" />
@@ -215,7 +233,12 @@ export default function ClothesDetailScreen({ route, navigation }) {
         <View style={styles.statsContainer}>
           <Text style={styles.sectionTitle}>📊 Usage Statistics</Text>
           <View style={styles.statsGrid}>
-            {renderStatCard("Times Worn", currentItem.wearCount || 0, "loop", "#4caf50")}
+            {renderStatCard(
+              "Times Worn",
+              currentItem.wearCount || 0,
+              "loop",
+              "#4caf50"
+            )}
             {renderStatCard("Avg Rating", averageRating, "star", "#FFD700")}
             {renderStatCard("Cost/Wear", costPerWear, "euro", "#007AFF")}
           </View>
@@ -224,13 +247,17 @@ export default function ClothesDetailScreen({ route, navigation }) {
         {/* Details */}
         <View style={styles.detailsContainer}>
           <Text style={styles.sectionTitle}>🏷️ Item Details</Text>
-          
+
           {renderInfoRow("Size", currentItem.size, "straighten")}
           {renderInfoRow("Color", currentItem.color, "palette")}
           {renderInfoRow("Material", currentItem.material, "texture")}
-          {renderInfoRow("Price", currentItem.price ? `€${currentItem.price}` : null, "euro")}
+          {renderInfoRow(
+            "Price",
+            currentItem.price ? `€${currentItem.price}` : null,
+            "euro"
+          )}
           {renderInfoRow("Last Worn", lastWorn, "schedule")}
-          
+
           {currentItem.seasons && currentItem.seasons.length > 0 && (
             <View style={styles.infoRow}>
               <MaterialIcons name="wb-sunny" size={20} color="#666" />
@@ -264,8 +291,16 @@ export default function ClothesDetailScreen({ route, navigation }) {
         {(currentItem.purchaseDate || currentItem.purchaseLocation) && (
           <View style={styles.purchaseContainer}>
             <Text style={styles.sectionTitle}>🛍️ Purchase Info</Text>
-            {renderInfoRow("Purchase Date", currentItem.purchaseDate, "date-range")}
-            {renderInfoRow("Purchased At", currentItem.purchaseLocation, "store")}
+            {renderInfoRow(
+              "Purchase Date",
+              currentItem.purchaseDate,
+              "date-range"
+            )}
+            {renderInfoRow(
+              "Purchased At",
+              currentItem.purchaseLocation,
+              "store"
+            )}
           </View>
         )}
 
@@ -287,23 +322,27 @@ export default function ClothesDetailScreen({ route, navigation }) {
 
         {/* Actions */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => {
               // Navigation vers l'écran de création d'outfit avec cet item pré-sélectionné
-              navigation.navigate("OutfitCreator", { preselectedItem: currentItem });
+              navigation.navigate("OutfitCreator", {
+                preselectedItem: currentItem,
+              });
             }}
           >
             <MaterialIcons name="style" size={20} color="#007AFF" />
             <Text style={styles.actionButtonText}>Create Outfit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionButton, styles.deleteButton]}
             onPress={handleDelete}
           >
             <MaterialIcons name="delete" size={20} color="#ff3b30" />
-            <Text style={[styles.actionButtonText, styles.deleteButtonText]}>Delete Item</Text>
+            <Text style={[styles.actionButtonText, styles.deleteButtonText]}>
+              Delete Item
+            </Text>
           </TouchableOpacity>
         </View>
 
