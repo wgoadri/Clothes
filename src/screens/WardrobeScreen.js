@@ -32,7 +32,7 @@ export default function WardrobeScreen() {
         <FlatList
           data={clothes}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <WardrobeItemCard item={item} />}
+          renderItem={({ item }) => <WardrobeItemCard item={item} onPress={(item) => navigation.navigate("ClothesDetail", { item })} />}
           contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}

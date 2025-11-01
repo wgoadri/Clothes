@@ -255,3 +255,26 @@ export const getItemStats = async (userId, itemId) => {
     return { totalWears: 0, averageRating: 0, occasions: [], lastWorn: null };
   }
 };
+
+export const updateWardrobeItem = async (userId, itemId, updateData) => {
+  try {
+    const itemRef = doc(db, "users", userId, "wardrobe", itemId);
+    await updateDoc(itemRef, {
+      ...updateData,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error updating wardrobe item:", error);
+    throw error;
+  }
+};
+
+export const deleteWardrobeItem = async (userId, itemId) => {
+  try {
+    const itemRef = doc(db, "users", userId, "wardrobe", itemId);
+    await deleteDoc(itemRef);
+  } catch (error) {
+    console.error("Error deleting wardrobe item:", error);
+    throw error;
+  }
+};

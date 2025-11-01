@@ -10,6 +10,7 @@ import OutfitsScreen from "../screens/OutfitsScreen";
 import AuthScreen from "../screens/AuthScreen";
 import OutfitCreatorScreen from "../screens/OutfitCreatorScreen";
 import DailyOutfitLoggerScreen from "../screens/DailyOutfitLoggerScreen";
+import ClothesDetailScreen from "../screens/ClothesDetailScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,12 @@ export default function AppNavigator() {
                 component={DailyOutfitLoggerScreen}
                 options={{ title: "Log Today's Outfit" }}
               />
+<Stack.Screen 
+  name="ClothesDetail" 
+  component={ClothesDetailScreen}
+  options={{ headerShown: false }}
+/>
+
       </Stack.Navigator>
     </NavigationContainer>
   );
