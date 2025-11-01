@@ -3,7 +3,6 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
@@ -15,7 +14,7 @@ import {
   toggleFavoriteOutfit,
 } from "../services/wardrobeService";
 import OutfitItemCard from "../components/OutfitItemCard";
-import { AntDesign } from "@expo/vector-icons";
+import BottomBar from "../components/BottomBar";
 
 export default function OutfitsScreen() {
   const [outfits, setOutfits] = useState([]);
@@ -64,33 +63,18 @@ export default function OutfitsScreen() {
               onDelete={handleDelete}
             />
           )}
+          contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate("OutfitCreator")}
-      >
-        <AntDesign name="plus" size={24} color="#fff" />
-      </TouchableOpacity>
+      {/* Bottom Bar */}
+      <BottomBar navigation={navigation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 20 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
+  container: { flex: 1, backgroundColor: "#fff" },
+  title: { fontSize: 22, fontWeight: "bold", margin: 20 },
   emptyText: { fontSize: 16, color: "#999", textAlign: "center" },
-  fab: {
-    position: "absolute",
-    bottom: 30,
-    right: 20,
-    backgroundColor: "#007AFF",
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-  },
 });

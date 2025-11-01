@@ -7,46 +7,20 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { auth } from "../services/firebase";
-import { Ionicons } from "@expo/vector-icons";
 import {
   getUsageMetrics,
   getWardrobeItems,
   getOutfits,
 } from "../services/wardrobeService";
+import BottomBar from "../components/BottomBar";
 
 export default function HomeScreen({ navigation }) {
   const [metrics, setMetrics] = useState(null);
   const [wardrobe, setWardrobe] = useState([]);
   const [outfits, setOutfits] = useState([]);
   const userId = auth.currentUser?.uid;
-
-  const quickActions = [
-    {
-      id: "1",
-      label: "Add Clothes",
-      icon: "camera-outline",
-      screen: "AddClothes",
-    },
-    { id: "2", label: "Wardrobe", icon: "shirt-outline", screen: "Wardrobe" },
-    {
-      id: "3",
-      label: "Track Usage",
-      icon: "calendar-outline",
-      screen: "TrackUsage",
-    },
-    { id: "4", label: "Outfits", icon: "star-outline", screen: "Outfits" },
-  ];
-
-  const renderAction = ({ item }) => (
-    <TouchableOpacity
-      style={styles.actionCard}
-      onPress={() => navigation.navigate(item.screen)}
-    >
-      <Ionicons name={item.icon} size={28} color="#333" />
-      <Text style={styles.actionLabel}>{item.label}</Text>
-    </TouchableOpacity>
-  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +33,6 @@ export default function HomeScreen({ navigation }) {
       setWardrobe(wardrobeData);
       setOutfits(outfitsData);
 
-      // Map IDs to names for display
       const outfitMap = Object.fromEntries(
         outfitsData.map((o) => [o.id, o.name])
       );
@@ -87,7 +60,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.scrollContainer}>
         <Text style={styles.title}>📊 Usage Metrics</Text>
 
         <Text style={styles.sectionTitle}>Most Worn Outfits</Text>
@@ -112,20 +85,16 @@ export default function HomeScreen({ navigation }) {
           ))
         )}
       </ScrollView>
-      <Text style={styles.subHeader}>Quick Actions</Text>
-      <FlatList
-        data={quickActions}
-        renderItem={renderAction}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        contentContainerStyle={styles.actionsContainer}
-      />
+
+      {/* Bottom Bar */}
+      <BottomBar navigation={navigation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#fff" },
+  scrollContainer: { flex: 1, padding: 16 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
   sectionTitle: {
     fontSize: 18,
@@ -136,37 +105,30 @@ const styles = StyleSheet.create({
   item: { fontSize: 16, marginBottom: 4 },
   empty: { fontSize: 14, color: "#777", fontStyle: "italic" },
   loading: { fontSize: 16, textAlign: "center", marginTop: 50 },
-  header: {
-    fontSize: 26,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: 20,
+
+  bottomBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 40,
+    paddingVertical: 12,
+    backgroundColor: "#f8f8f8",
+    elevation: 10,
   },
-  subHeader: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  statsContainer: {
-    backgroundColor: "#f2f2f2",
-    padding: 16,
-    borderRadius: 12,
-    marginVertical: 10,
-  },
-  statsTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 8 },
-  statsRow: { flexDirection: "column", justifyContent: "flex-start" },
-  statsText: { fontSize: 14 },
-  actionsContainer: { alignItems: "center", justifyContent: "center" },
-  actionCard: {
-    backgroundColor: "#fafafa",
-    borderRadius: 12,
-    padding: 20,
-    margin: 10,
-    width: 140,
+  iconButton: {
     alignItems: "center",
     justifyContent: "center",
-    elevation: 2,
   },
-  actionLabel: { marginTop: 8, fontWeight: "600" },
+  addButton: {
+    position: "absolute",
+    bottom: 25,
+    alignSelf: "center",
+    backgroundColor: "#007AFF",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+  },
 });

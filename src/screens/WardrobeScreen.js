@@ -3,9 +3,12 @@ import { View, FlatList, StyleSheet, Text } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../services/firebase";
 import WardrobeItemCard from "../components/WardrobeItemCard";
+import BottomBar from "../components/BottomBar";
+import { useNavigation } from "@react-navigation/native";
 
 export default function WardrobeScreen() {
   const [clothes, setClothes] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchWardrobe = async () => {
@@ -30,14 +33,17 @@ export default function WardrobeScreen() {
           data={clothes}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <WardrobeItemCard item={item} />}
+          contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}
+      {/* Bottom Bar */}
+      <BottomBar navigation={navigation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
-  emptyText: { fontSize: 16, color: "#999" },
+  container: { flex: 1, backgroundColor: "#fff" },
+  title: { fontSize: 22, fontWeight: "bold", margin: 20 },
+  emptyText: { fontSize: 16, color: "#999", textAlign: "center" },
 });
