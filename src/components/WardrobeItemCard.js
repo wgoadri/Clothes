@@ -4,19 +4,19 @@ import { MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
 
 export default function WardrobeItemCard({ item, onPress }) {
   const wearCount = item.wearCount || 0;
-  const lastWorn = item.lastWorn 
-    ? new Date(item.lastWorn).toLocaleDateString() 
+  const lastWorn = item.lastWorn
+    ? new Date(item.lastWorn).toLocaleDateString()
     : "Never worn";
-  
+
   // Mean rating
-  const averageRating = wearCount > 0 && item.totalRating > 0 
-    ? (item.totalRating / wearCount).toFixed(1) 
-    : null;
+  const averageRating =
+    wearCount > 0 && item.totalRating > 0
+      ? (item.totalRating / wearCount).toFixed(1)
+      : null;
 
   // Cost per wear
-  const costPerWear = item.price && wearCount > 0 
-    ? (item.price / wearCount).toFixed(2) 
-    : null;
+  const costPerWear =
+    item.price && wearCount > 0 ? (item.price / wearCount).toFixed(2) : null;
 
   const getUsageColor = () => {
     if (wearCount === 0) return "#ff6b6b";
@@ -28,10 +28,10 @@ export default function WardrobeItemCard({ item, onPress }) {
     if (!item.seasons || item.seasons.length === 0) return null;
     const seasonIcons = {
       spring: "flower-outline",
-      summer: "sunny-outline", 
+      summer: "sunny-outline",
       autumn: "leaf-outline",
       winter: "snow-outline",
-      all: "calendar-outline"
+      all: "calendar-outline",
     };
     return seasonIcons[item.seasons[0]];
   };
@@ -47,7 +47,7 @@ export default function WardrobeItemCard({ item, onPress }) {
             <MaterialIcons name="checkroom" size={32} color="#ccc" />
           </View>
         )}
-        
+
         {/* Usage badge */}
         <View style={[styles.usageBadge, { backgroundColor: getUsageColor() }]}>
           <Text style={styles.usageBadgeText}>{wearCount}</Text>
@@ -64,7 +64,9 @@ export default function WardrobeItemCard({ item, onPress }) {
       {/* Main Information */}
       <View style={styles.info}>
         <View style={styles.header}>
-          <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.name} numberOfLines={1}>
+            {item.name}
+          </Text>
           {averageRating && (
             <View style={styles.ratingContainer}>
               <AntDesign name="star" size={12} color="#FFD700" />
@@ -75,9 +77,7 @@ export default function WardrobeItemCard({ item, onPress }) {
 
         {/* Brand and category */}
         <View style={styles.brandCategory}>
-          {item.brand && (
-            <Text style={styles.brand}>{item.brand}</Text>
-          )}
+          {item.brand && <Text style={styles.brand}>{item.brand}</Text>}
           <Text style={styles.category}>{item.category}</Text>
         </View>
 
@@ -90,9 +90,14 @@ export default function WardrobeItemCard({ item, onPress }) {
           )}
           {item.color && (
             <View style={styles.detailChip}>
-              <View style={[styles.colorDot, { 
-                backgroundColor: getColorHex(item.color) 
-              }]} />
+              <View
+                style={[
+                  styles.colorDot,
+                  {
+                    backgroundColor: getColorHex(item.color),
+                  },
+                ]}
+              />
               <Text style={styles.detailText}>{item.color}</Text>
             </View>
           )}
@@ -126,13 +131,22 @@ export default function WardrobeItemCard({ item, onPress }) {
 
 const getColorHex = (colorName) => {
   const colors = {
-    'Black': '#000000', 'White': '#FFFFFF', 'Gray': '#808080',
-    'Navy': '#000080', 'Blue': '#0066CC', 'Red': '#FF0000',
-    'Green': '#008000', 'Yellow': '#FFFF00', 'Pink': '#FFC0CB',
-    'Purple': '#800080', 'Brown': '#8B4513', 'Orange': '#FFA500',
-    'Beige': '#F5F5DC', 'Burgundy': '#800020'
+    Black: "#000000",
+    White: "#FFFFFF",
+    Gray: "#808080",
+    Navy: "#000080",
+    Blue: "#0066CC",
+    Red: "#FF0000",
+    Green: "#008000",
+    Yellow: "#FFFF00",
+    Pink: "#FFC0CB",
+    Purple: "#800080",
+    Brown: "#8B4513",
+    Orange: "#FFA500",
+    Beige: "#F5F5DC",
+    Burgundy: "#800020",
   };
-  return colors[colorName] || '#ccc';
+  return colors[colorName] || "#ccc";
 };
 
 const styles = StyleSheet.create({
