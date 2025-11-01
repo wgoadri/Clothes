@@ -21,25 +21,40 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Auth"
           component={AuthScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="AddClothes" component={AddClothesScreen} />
+        <Stack.Screen
+          name="Wardrobe"
+          component={WardrobeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TrackUsage"
+          component={TrackUsageScreen}
           options={{ headerShown: true }}
         />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="AddClothes" component={AddClothesScreen} />
-        <Stack.Screen name="Wardrobe" component={WardrobeScreen} />
-        <Stack.Screen name="TrackUsage" component={TrackUsageScreen} />
-        <Stack.Screen name="Outfits" component={OutfitsScreen} />
+        <Stack.Screen
+          name="Outfits"
+          component={OutfitsScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="OutfitCreator" component={OutfitCreatorScreen} />
-              <Stack.Screen 
-                name="DailyOutfitLogger" 
-                component={DailyOutfitLoggerScreen}
-                options={{ title: "Log Today's Outfit" }}
-              />
-<Stack.Screen 
-  name="ClothesDetail" 
-  component={ClothesDetailScreen}
-  options={{ headerShown: false }}
-/>
-
+        <Stack.Screen
+          name="DailyOutfitLogger"
+          component={DailyOutfitLoggerScreen}
+          options={{ title: "Log Today's Outfit" }}
+        />
+        <Stack.Screen
+          name="ClothesDetail"
+          component={ClothesDetailScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
