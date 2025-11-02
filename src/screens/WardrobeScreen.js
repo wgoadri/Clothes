@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../services/firebase";
 import WardrobeItemCard from "../components/WardrobeItemCard";
 import ScreenLayout from "../components/ScreenLayout";
 import ClothesStatsBar from "../components/ClothesStatsBar";
 import SearchBar from "../components/SearchBar";
-import FilterBar from "../components/FilterBar";
+import ClothesFilterBar from "../components/ClothesFilterBar";
 
 export default function WardrobeScreen({ navigation }) {
   const [clothes, setClothes] = useState([]);
   const [filteredClothes, setFilteredClothes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState("all");
+  const [category, setCategoryFilter] = useState("All");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function WardrobeScreen({ navigation }) {
   }, []);
   useEffect(() => {
     filterClothes();
-  }, [clothes, searchQuery, filterType]);
+  }, [clothes, searchQuery, category]);
 
   const fetchWardrobe = async () => {
     try {
@@ -54,25 +54,8 @@ export default function WardrobeScreen({ navigation }) {
     }
 
     // Filter with type
-    switch (filterType) {
-      case "favorites":
-        filtered = filtered.filter((clothes) => clothes.wearCount > 4);
-        break;
-      case "recent":
-        filtered = filtered
-          .filter((clothes) => clothes.lastWorn)
-          .sort((a, b) => new Date(b.lastWorn) - new Date(a.lastWorn));
-        break;
-      case "popular":
-        filtered = filtered.sort(
-          (a, b) => (b.wearCount || 0) - (a.wearCount || 0)
-        );
-        break;
-      default:
-        filtered = filtered.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-    }
+    if (category !== "All")
+      filtered = filtered.filter((clothes) => clothes.category === category);
 
     setFilteredClothes(filtered);
   };
@@ -93,7 +76,10 @@ export default function WardrobeScreen({ navigation }) {
         worn={clothes.filter((o) => o.wearCount > 0).length}
       />
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
-      <FilterBar filterType={filterType} setFilterType={setFilterType} />
+      <ClothesFilterBar
+        category={category}
+        setCategoryFilter={setCategoryFilter}
+      />
     </>
   );
 
@@ -122,5 +108,4 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
   },
-  emptyText: { fontSize: 16, color: "#999", textAlign: "center" },
 });

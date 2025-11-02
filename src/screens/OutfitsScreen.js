@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList, StyleSheet, Alert } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { FlatList, StyleSheet, Alert } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
 import OutfitItemCard from "../components/OutfitItemCard";
 import ClothesStatsBar from "../components/ClothesStatsBar";
 import SearchBar from "../components/SearchBar";
-import FilterBar from "../components/FilterBar";
+import OutfitsFilterBar from "../components/OutfitsFilterBar";
 import EmptyState from "../components/EmptyState";
 import { auth } from "../services/firebase";
 import {
@@ -175,7 +174,7 @@ export default function OutfitsScreen({ navigation }) {
         worn={outfits.filter((o) => o.wearCount > 0).length}
       />
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
-      <FilterBar filterType={filterType} setFilterType={setFilterType} />
+      <OutfitsFilterBar filterType={filterType} setFilterType={setFilterType} />
     </>
   );
 
