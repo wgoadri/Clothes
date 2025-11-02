@@ -15,71 +15,13 @@ import { addDoc, collection } from "firebase/firestore";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { auth, db } from "../services/firebase";
-import BottomBar from "../components/BottomBar";
-
-const CATEGORIES = [
-  { id: "tops", name: "Tops", icon: "shirt-outline" },
-  { id: "bottoms", name: "Bottoms", icon: "body-outline" },
-  { id: "dresses", name: "Dresses", icon: "woman-outline" },
-  { id: "outerwear", name: "Outerwear", icon: "rainy-outline" },
-  { id: "shoes", name: "Shoes", icon: "footsteps-outline" },
-  { id: "accessories", name: "Accessories", icon: "watch-outline" },
-  { id: "underwear", name: "Underwear", icon: "body-outline" },
-  { id: "activewear", name: "Activewear", icon: "fitness-outline" },
-];
-
-const SIZES = [
-  "XS",
-  "S",
-  "M",
-  "L",
-  "XL",
-  "XXL",
-  "34",
-  "36",
-  "38",
-  "40",
-  "42",
-  "44",
-  "46",
-];
-
-const COLORS = [
-  { name: "Black", hex: "#000000" },
-  { name: "White", hex: "#FFFFFF" },
-  { name: "Gray", hex: "#808080" },
-  { name: "Navy", hex: "#000080" },
-  { name: "Blue", hex: "#0066CC" },
-  { name: "Red", hex: "#FF0000" },
-  { name: "Green", hex: "#008000" },
-  { name: "Yellow", hex: "#FFFF00" },
-  { name: "Pink", hex: "#FFC0CB" },
-  { name: "Purple", hex: "#800080" },
-  { name: "Brown", hex: "#8B4513" },
-  { name: "Orange", hex: "#FFA500" },
-  { name: "Beige", hex: "#F5F5DC" },
-  { name: "Burgundy", hex: "#800020" },
-];
-
-const SEASONS = [
-  { id: "spring", name: "Spring", icon: "flower-outline" },
-  { id: "summer", name: "Summer", icon: "sunny-outline" },
-  { id: "autumn", name: "Autumn", icon: "leaf-outline" },
-  { id: "winter", name: "Winter", icon: "snow-outline" },
-  { id: "all", name: "All Seasons", icon: "calendar-outline" },
-];
-
-const OCCASIONS = [
-  "Casual",
-  "Work",
-  "Formal",
-  "Party",
-  "Sport",
-  "Beach",
-  "Travel",
-  "Date",
-  "Wedding",
-];
+import {
+  CLOTHES_CATEGORIES,
+  SEASONS,
+  OCCASIONS,
+} from "../constants/categories";
+import { SIZES } from "../constants/sizes";
+import { COLORS } from "../constants/colors";
 
 export default function AddClothesScreen({ navigation }) {
   // Basic field
@@ -259,6 +201,7 @@ export default function AddClothesScreen({ navigation }) {
     setCareInstructions("");
   };
 
+  const filteredCategories = CLOTHES_CATEGORIES;
   const renderCategoryModal = () => (
     <Modal visible={categoryModalVisible} transparent animationType="slide">
       <View style={styles.modalOverlay}>
@@ -270,7 +213,7 @@ export default function AddClothesScreen({ navigation }) {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={CATEGORIES}
+            data={filteredCategories}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -333,6 +276,7 @@ export default function AddClothesScreen({ navigation }) {
     </Modal>
   );
 
+  const sizes = SIZES;
   const renderSizeModal = () => (
     <Modal visible={sizeModalVisible} transparent animationType="slide">
       <View style={styles.modalOverlay}>
@@ -344,7 +288,7 @@ export default function AddClothesScreen({ navigation }) {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={SIZES}
+            data={sizes}
             numColumns={4}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
@@ -373,6 +317,9 @@ export default function AddClothesScreen({ navigation }) {
       </View>
     </Modal>
   );
+
+  const seasonsCategories = SEASONS;
+  const occasionsCategories = OCCASIONS;
 
   return (
     <View style={styles.container}>
@@ -528,7 +475,7 @@ export default function AddClothesScreen({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🌤️ Suitable Seasons</Text>
           <View style={styles.chipContainer}>
-            {SEASONS.map((season) => (
+            {seasonsCategories.map((season) => (
               <TouchableOpacity
                 key={season.id}
                 style={[
@@ -559,22 +506,27 @@ export default function AddClothesScreen({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🎭 Suitable Occasions</Text>
           <View style={styles.chipContainer}>
-            {OCCASIONS.map((occasion) => (
+            {occasionsCategories.map((occasion) => (
               <TouchableOpacity
-                key={occasion}
+                key={occasion.id}
                 style={[
                   styles.chip,
-                  occasions.includes(occasion) && styles.selectedChip,
+                  occasions.includes(occasion.id) && styles.selectedChip,
                 ]}
-                onPress={() => toggleOccasion(occasion)}
+                onPress={() => toggleOccasion(occasion.id)}
               >
+                <Ionicons
+                  name={occasion.icon}
+                  size={16}
+                  color={occasions.includes(occasion.id) ? "#fff" : "#007AFF"}
+                />
                 <Text
                   style={[
                     styles.chipText,
-                    occasions.includes(occasion) && styles.selectedChipText,
+                    occasions.includes(occasion.id) && styles.selectedChipText,
                   ]}
                 >
-                  {occasion}
+                  {occasion.name}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -630,9 +582,6 @@ export default function AddClothesScreen({ navigation }) {
       {renderCategoryModal()}
       {renderColorModal()}
       {renderSizeModal()}
-
-      {/* BottomBar */}
-      <BottomBar navigation={navigation} />
     </View>
   );
 }
@@ -925,6 +874,6 @@ const styles = StyleSheet.create({
   },
 
   bottomSpacing: {
-    height: 100, // Space for BottomBar
+    height: 50, // Space for BottomBar
   },
 });
