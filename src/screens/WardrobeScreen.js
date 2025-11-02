@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, FlatList, StyleSheet, Text } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../services/firebase";
-import WardrobeItemCard from "../components/WardrobeItemCard";
-import BottomBar from "../components/BottomBar";
 import { useNavigation } from "@react-navigation/native";
+import WardrobeItemCard from "../components/WardrobeItemCard";
+import ScreenLayout from "../components/ScreenLayout";
 
 export default function WardrobeScreen() {
   const [clothes, setClothes] = useState([]);
@@ -22,8 +22,7 @@ export default function WardrobeScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🧥 Your Wardrobe</Text>
+    <ScreenLayout navigation={navigation} title="🧥 Your Wardrobe">
       {clothes.length === 0 ? (
         <Text style={styles.emptyText}>
           No clothes added yet. Add your first piece!
@@ -32,13 +31,16 @@ export default function WardrobeScreen() {
         <FlatList
           data={clothes}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <WardrobeItemCard item={item} onPress={(item) => navigation.navigate("ClothesDetail", { item })} />}
+          renderItem={({ item }) => (
+            <WardrobeItemCard
+              item={item}
+              onPress={(item) => navigation.navigate("ClothesDetail", { item })}
+            />
+          )}
           contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}
-      {/* Bottom Bar */}
-      <BottomBar navigation={navigation} />
-    </View>
+    </ScreenLayout>
   );
 }
 

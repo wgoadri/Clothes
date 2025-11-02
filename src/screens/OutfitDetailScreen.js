@@ -11,7 +11,7 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import { MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome, AntDesign } from "@expo/vector-icons";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import { getWardrobeItems, logDailyOutfit } from "../services/wardrobeService";
@@ -39,7 +39,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
   };
 
   const getItemDetails = (itemId) => {
-    return wardrobeItems.find(item => item.id === itemId);
+    return wardrobeItems.find((item) => item.id === itemId);
   };
 
   const handleUpdate = async () => {
@@ -49,7 +49,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
         ...editedOutfit,
         updatedAt: new Date().toISOString(),
       });
-      
+
       setCurrentOutfit(editedOutfit);
       setEditModalVisible(false);
       Alert.alert("Success", "Outfit updated successfully!");
@@ -85,27 +85,27 @@ export default function OutfitDetailScreen({ route, navigation }) {
 
   const handleWearToday = async () => {
     const logData = {
-      date: new Date().toISOString().split('T')[0],
-            outfitId: currentOutfit.id,
+      date: new Date().toISOString().split("T")[0],
+      outfitId: currentOutfit.id,
       outfitName: currentOutfit.name,
       items: currentOutfit.items || [],
       rating: 0,
       notes: "",
       photos: [],
-      occasion: "daily"
+      occasion: "daily",
     };
 
     try {
       await logDailyOutfit(userId, logData);
       Alert.alert(
-        "Outfit logged! 🎉", 
+        "Outfit logged! 🎉",
         `"${currentOutfit.name}" has been logged for today. You can add rating and photos later.`,
         [
           { text: "OK" },
-          { 
-            text: "Add Details", 
-            onPress: () => navigation.navigate("DailyOutfitLogger")
-          }
+          {
+            text: "Add Details",
+            onPress: () => navigation.navigate("DailyOutfitLogger"),
+          },
         ]
       );
     } catch (error) {
@@ -118,7 +118,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
     try {
       const outfitRef = doc(db, "users", userId, "outfits", outfit.id);
       const newFavoriteStatus = !currentOutfit.favorite;
-      
+
       await updateDoc(outfitRef, { favorite: newFavoriteStatus });
       setCurrentOutfit({ ...currentOutfit, favorite: newFavoriteStatus });
     } catch (error) {
@@ -143,14 +143,18 @@ export default function OutfitDetailScreen({ route, navigation }) {
           <TextInput
             style={styles.editInput}
             value={editedOutfit.name}
-            onChangeText={(text) => setEditedOutfit({...editedOutfit, name: text})}
+            onChangeText={(text) =>
+              setEditedOutfit({ ...editedOutfit, name: text })
+            }
             placeholder="Outfit name"
           />
-          
+
           <TextInput
             style={[styles.editInput, styles.textArea]}
             value={editedOutfit.description || ""}
-            onChangeText={(text) => setEditedOutfit({...editedOutfit, description: text})}
+            onChangeText={(text) =>
+              setEditedOutfit({ ...editedOutfit, description: text })
+            }
             placeholder="Description"
             multiline
             numberOfLines={3}
@@ -159,7 +163,9 @@ export default function OutfitDetailScreen({ route, navigation }) {
           <TextInput
             style={[styles.editInput, styles.textArea]}
             value={editedOutfit.notes || ""}
-            onChangeText={(text) => setEditedOutfit({...editedOutfit, notes: text})}
+            onChangeText={(text) =>
+              setEditedOutfit({ ...editedOutfit, notes: text })
+            }
             placeholder="Personal notes"
             multiline
             numberOfLines={3}
@@ -174,9 +180,11 @@ export default function OutfitDetailScreen({ route, navigation }) {
     if (!itemDetails) return null;
 
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.itemCard}
-        onPress={() => navigation.navigate("ClothesDetail", { item: itemDetails })}
+        onPress={() =>
+          navigation.navigate("ClothesDetail", { item: itemDetails })
+        }
       >
         {itemDetails.image ? (
           <Image source={{ uri: itemDetails.image }} style={styles.itemImage} />
@@ -186,7 +194,9 @@ export default function OutfitDetailScreen({ route, navigation }) {
           </View>
         )}
         <View style={styles.itemInfo}>
-          <Text style={styles.itemName} numberOfLines={1}>{itemDetails.name}</Text>
+          <Text style={styles.itemName} numberOfLines={1}>
+            {itemDetails.name}
+          </Text>
           <Text style={styles.itemCategory}>{itemDetails.category}</Text>
           {itemDetails.brand && (
             <Text style={styles.itemBrand}>{itemDetails.brand}</Text>
@@ -198,38 +208,42 @@ export default function OutfitDetailScreen({ route, navigation }) {
   };
 
   const wearCount = currentOutfit.wearCount || 0;
-  const lastWorn = currentOutfit.lastWorn 
-    ? new Date(currentOutfit.lastWorn).toLocaleDateString() 
+  const lastWorn = currentOutfit.lastWorn
+    ? new Date(currentOutfit.lastWorn).toLocaleDateString()
     : "Never worn";
-  const averageRating = wearCount > 0 && currentOutfit.totalRating > 0 
-    ? (currentOutfit.totalRating / wearCount).toFixed(1) 
-    : null;
+  const averageRating =
+    wearCount > 0 && currentOutfit.totalRating > 0
+      ? (currentOutfit.totalRating / wearCount).toFixed(1)
+      : null;
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header avec actions */}
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
             <MaterialIcons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
-          
+
           <View style={styles.headerActions}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.headerActionButton}
               onPress={toggleFavorite}
             >
-              <AntDesign 
-                name={currentOutfit.favorite ? "heart" : "hearto"} 
-                size={24} 
-                color={currentOutfit.favorite ? "#e63946" : "#666"} 
+              <FontAwesome
+                name={currentOutfit.favorite ? "heart" : "heart-o"}
+                size={24}
+                color={currentOutfit.favorite ? "#e63946" : "#666"}
               />
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.headerActionButton}
               onPress={() => setEditModalVisible(true)}
             >
@@ -262,12 +276,13 @@ export default function OutfitDetailScreen({ route, navigation }) {
                 <Text style={styles.favoriteTagText}>Favorite</Text>
               </View>
             )}
-            
-            {currentOutfit.occasions && currentOutfit.occasions.map((occasion, index) => (
-              <View key={index} style={styles.occasionTag}>
-                <Text style={styles.occasionTagText}>{occasion}</Text>
-              </View>
-            ))}
+
+            {currentOutfit.occasions &&
+              currentOutfit.occasions.map((occasion, index) => (
+                <View key={index} style={styles.occasionTag}>
+                  <Text style={styles.occasionTagText}>{occasion}</Text>
+                </View>
+              ))}
           </View>
         </View>
 
@@ -280,13 +295,13 @@ export default function OutfitDetailScreen({ route, navigation }) {
               <Text style={styles.statValue}>{wearCount}</Text>
               <Text style={styles.statLabel}>Times Worn</Text>
             </View>
-            
+
             <View style={styles.statCard}>
               <MaterialIcons name="schedule" size={24} color="#007AFF" />
               <Text style={styles.statValue}>{lastWorn}</Text>
               <Text style={styles.statLabel}>Last Worn</Text>
             </View>
-            
+
             {averageRating && (
               <View style={styles.statCard}>
                 <AntDesign name="star" size={24} color="#FFD700" />
@@ -302,7 +317,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
           <Text style={styles.sectionTitle}>
             👕 Items in this Outfit ({currentOutfit.items?.length || 0})
           </Text>
-          
+
           {currentOutfit.items && currentOutfit.items.length > 0 ? (
             <FlatList
               data={currentOutfit.items}
@@ -328,7 +343,7 @@ export default function OutfitDetailScreen({ route, navigation }) {
 
         {/* Actions */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.primaryAction}
             onPress={handleWearToday}
           >
@@ -336,20 +351,26 @@ export default function OutfitDetailScreen({ route, navigation }) {
             <Text style={styles.primaryActionText}>Wear Today</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.secondaryAction}
-            onPress={() => navigation.navigate("OutfitCreator", { editOutfit: currentOutfit })}
+            onPress={() =>
+              navigation.navigate("OutfitCreator", {
+                editOutfit: currentOutfit,
+              })
+            }
           >
             <MaterialIcons name="edit" size={20} color="#007AFF" />
             <Text style={styles.secondaryActionText}>Edit Outfit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.secondaryAction, styles.deleteAction]}
             onPress={handleDelete}
           >
             <MaterialIcons name="delete" size={20} color="#ff3b30" />
-            <Text style={[styles.secondaryActionText, styles.deleteActionText]}>Delete</Text>
+            <Text style={[styles.secondaryActionText, styles.deleteActionText]}>
+              Delete
+            </Text>
           </TouchableOpacity>
         </View>
 

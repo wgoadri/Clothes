@@ -12,13 +12,9 @@ import OutfitCreatorScreen from "../screens/OutfitCreatorScreen";
 import DailyOutfitLoggerScreen from "../screens/DailyOutfitLoggerScreen";
 import ClothesDetailScreen from "../screens/ClothesDetailScreen";
 import OutfitDetailScreen from "../screens/OutfitDetailScreen";
-
-<Stack.Screen 
-  name="OutfitDetail" 
-  component={OutfitDetailScreen}
-  options={{ headerShown: false }}
-/>
-
+import ProfileScreen from "../screens/ProfileScreen";
+import SettingsScreen from "../screens/SettingsScreen";
+import AboutScreen from "../screens/AboutScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -63,11 +59,14 @@ export default function AppNavigator() {
           component={ClothesDetailScreen}
           options={{ headerShown: false }}
         />
-<Stack.Screen 
-  name="OutfitDetail" 
-  component={OutfitDetailScreen}
-  options={{ headerShown: false }}
-/>
+        <Stack.Screen
+          name="OutfitDetail"
+          component={OutfitDetailScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="About" component={AboutScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

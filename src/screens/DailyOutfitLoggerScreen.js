@@ -9,7 +9,7 @@ import {
   Image,
   TextInput
 } from "react-native";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { auth } from "../services/firebase";
 import { 
@@ -93,12 +93,9 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
     return (
       <View style={styles.starsContainer}>
         {[1, 2, 3, 4, 5].map((star) => (
-          <TouchableOpacity
-            key={star}
-            onPress={() => setRating(star)}
-          >
-            <AntDesign
-              name={star <= rating ? "star" : "staro"}
+          <TouchableOpacity key={star} onPress={() => setRating(star)}>
+            <FontAwesome
+              name={star <= rating ? "star" : "star-o"}
               size={30}
               color={star <= rating ? "#FFD700" : "#ccc"}
             />

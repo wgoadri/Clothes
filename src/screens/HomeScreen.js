@@ -20,7 +20,7 @@ import {
   getOutfits,
   getTodayOutfit,
 } from "../services/wardrobeService";
-import BottomBar from "../components/BottomBar";
+import ScreenLayout from "../components/ScreenLayout";
 
 export default function HomeScreen({ navigation }) {
   const [metrics, setMetrics] = useState(null);
@@ -70,7 +70,7 @@ export default function HomeScreen({ navigation }) {
     });
   };
 
-  // Composant pour le widget "Today's Outfit"
+  // Widget "Today's Outfit"
   const TodayOutfitWidget = () => {
     if (todayOutfit) {
       return (
@@ -116,10 +116,8 @@ export default function HomeScreen({ navigation }) {
   if (!metrics) return <Text style={styles.loading}>Loading metrics...</Text>;
 
   return (
-    <View style={styles.container}>
+    <ScreenLayout navigation={navigation} title="My Closet">
       <ScrollView style={styles.scrollContainer}>
-        <Text style={styles.title}>My Closet</Text>
-
         {/* Widget Today's Outfit */}
         <TodayOutfitWidget />
 
@@ -197,10 +195,7 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
-      {/* Bottom Bar */}
-      <BottomBar navigation={navigation} />
-    </View>
+    </ScreenLayout>
   );
 }
 
