@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, StyleSheet, Text, Modal } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  Modal,
+  Dimensions,
+} from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+
+const { width } = Dimensions.get("window");
 
 export default function BottomBar({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -15,37 +24,50 @@ export default function BottomBar({ navigation }) {
   return (
     <>
       <View style={styles.container}>
-        {/* Leftmost icon — Home */}
-        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+        {/* Home */}
+        <TouchableOpacity
+          style={styles.extremLeftButton}
+          onPress={() => navigation.navigate("Home")}
+        >
           <Ionicons name="home-outline" size={26} color="#333" />
         </TouchableOpacity>
 
         {/* Wardrobe */}
-        <TouchableOpacity onPress={() => navigation.navigate("Wardrobe")}>
+        <TouchableOpacity
+          style={styles.leftButton}
+          onPress={() => navigation.navigate("Wardrobe")}
+        >
           <Ionicons name="shirt-outline" size={26} color="#333" />
         </TouchableOpacity>
 
         {/* Center circular Add button */}
-        <View style={styles.centerButtonContainer}>
+        <View style={styles.centerButtonWrapper}>
           <TouchableOpacity
             style={styles.centerButton}
             onPress={handleAddPress}
           >
-            <Ionicons name="add" size={32} color="#fff" />
+            <Ionicons name="add" size={34} color="#fff" />
           </TouchableOpacity>
         </View>
 
         {/* Outfits */}
-        <TouchableOpacity onPress={() => navigation.navigate("Outfits")}>
+        <TouchableOpacity
+          style={styles.RightButton}
+          onPress={() => navigation.navigate("Outfits")}
+        >
           <Ionicons name="star-outline" size={26} color="#333" />
         </TouchableOpacity>
 
-        {/* Rightmost icon — Track details */}
-        <TouchableOpacity onPress={() => navigation.navigate("TrackUsage")}>
+        {/* Track usage */}
+        <TouchableOpacity
+          style={styles.extremRightButton}
+          onPress={() => navigation.navigate("TrackUsage")}
+        >
           <Ionicons name="calendar-outline" size={26} color="#333" />
         </TouchableOpacity>
       </View>
 
+      {/* MODAL */}
       <Modal
         visible={modalVisible}
         transparent
@@ -56,7 +78,6 @@ export default function BottomBar({ navigation }) {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>What do you want to do?</Text>
 
-            {/* Option to log today's outfit */}
             <TouchableOpacity
               style={[styles.modalButton, styles.primaryButton]}
               onPress={() => handleOption("DailyOutfitLogger")}
@@ -67,7 +88,6 @@ export default function BottomBar({ navigation }) {
               </View>
             </TouchableOpacity>
 
-            {/* Option to add clothes */}
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => handleOption("AddClothes")}
@@ -78,7 +98,6 @@ export default function BottomBar({ navigation }) {
               </View>
             </TouchableOpacity>
 
-            {/* Option to create outfit */}
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => handleOption("OutfitCreator")}
@@ -89,7 +108,6 @@ export default function BottomBar({ navigation }) {
               </View>
             </TouchableOpacity>
 
-            {/* Bouton Cancel */}
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={() => setModalVisible(false)}
@@ -109,8 +127,7 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     bottom: 0,
-    left: 0,
-    right: 0,
+    width: width,
     height: 70,
     backgroundColor: "#fff",
     borderTopWidth: 1,
@@ -118,25 +135,38 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
-  centerButtonContainer: {
+  extremLeftButton: {
+    paddingRight: 0,
+  },
+  extremRightButton: {
+    paddingLeft: 0,
+  },
+  LeftButton: {
+    paddingRight: 60,
+  },
+  RightButton: {
+    paddingLeft: 60,
+  },
+  centerButtonWrapper: {
     position: "absolute",
-    top: -30,
+    top: -35,
     alignSelf: "center",
+    zIndex: 2,
   },
   centerButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#b64fc4ff",
     width: 70,
     height: 70,
     borderRadius: 35,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
     shadowColor: "#000",
     shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+    elevation: 6,
   },
   modalOverlay: {
     flex: 1,
@@ -155,7 +185,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 20,
-    textAlign: "center",
   },
   modalButton: {
     width: "100%",
@@ -171,7 +200,6 @@ const styles = StyleSheet.create({
   buttonContent: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
   },
   modalButtonText: {
     color: "#fff",
