@@ -272,7 +272,10 @@ export default function OutfitCreatorScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -288,7 +291,7 @@ export default function OutfitCreatorScreen({ route, navigation }) {
 
         <View style={styles.formSection}>
           <Text style={styles.sectionTitle}>📝 Basic Information</Text>
-          
+
           <TextInput
             style={styles.input}
             placeholder="Outfit name (e.g. Casual Friday)"
@@ -317,7 +320,7 @@ export default function OutfitCreatorScreen({ route, navigation }) {
 
         <View style={styles.formSection}>
           <Text style={styles.sectionTitle}>🔍 Add Items to Outfit</Text>
-          
+
           <View style={styles.searchContainer}>
             <MaterialIcons name="search" size={20} color="#666" />
             <TextInput
@@ -359,10 +362,10 @@ export default function OutfitCreatorScreen({ route, navigation }) {
             onPress={() => setShowAdvancedOptions(!showAdvancedOptions)}
           >
             <Text style={styles.sectionTitle}>⚙️ Advanced Options</Text>
-            <MaterialIcons 
-              name={showAdvancedOptions ? "expand-less" : "expand-more"} 
-              size={24} 
-              color="#666" 
+            <MaterialIcons
+              name={showAdvancedOptions ? "expand-less" : "expand-more"}
+              size={24}
+              color="#666"
             />
           </TouchableOpacity>
 
@@ -376,19 +379,22 @@ export default function OutfitCreatorScreen({ route, navigation }) {
                       key={season.id}
                       style={[
                         styles.chip,
-                        seasons.includes(season.id) && styles.selectedChip
+                        seasons.includes(season.id) && styles.selectedChip,
                       ]}
                       onPress={() => toggleSeason(season.id)}
                     >
-                      <Ionicons 
-                        name={season.icon} 
-                        size={14} 
-                        color={seasons.includes(season.id) ? "#fff" : "#007AFF"} 
+                      <Ionicons
+                        name={season.icon}
+                        size={14}
+                        color={seasons.includes(season.id) ? "#fff" : "#007AFF"}
                       />
-                      <Text style={[
-                        styles.chipText,
-                        seasons.includes(season.id) && styles.selectedChipText
-                      ]}>
+                      <Text
+                        style={[
+                          styles.chipText,
+                          seasons.includes(season.id) &&
+                            styles.selectedChipText,
+                        ]}
+                      >
                         {season.name}
                       </Text>
                     </TouchableOpacity>
@@ -404,14 +410,17 @@ export default function OutfitCreatorScreen({ route, navigation }) {
                       key={occasion}
                       style={[
                         styles.chip,
-                        occasions.includes(occasion) && styles.selectedChip
+                        occasions.includes(occasion) && styles.selectedChip,
                       ]}
                       onPress={() => toggleOccasion(occasion)}
                     >
-                      <Text style={[
-                        styles.chipText,
-                        occasions.includes(occasion) && styles.selectedChipText
-                      ]}>
+                      <Text
+                        style={[
+                          styles.chipText,
+                          occasions.includes(occasion) &&
+                            styles.selectedChipText,
+                        ]}
+                      >
                         {occasion}
                       </Text>
                     </TouchableOpacity>
@@ -437,7 +446,7 @@ export default function OutfitCreatorScreen({ route, navigation }) {
 
         {/* Actions */}
         <View style={styles.actionsContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.secondaryButton}
             onPress={() => navigation.goBack()}
           >
@@ -445,10 +454,7 @@ export default function OutfitCreatorScreen({ route, navigation }) {
             <Text style={styles.secondaryButtonText}>Cancel</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.primaryButton}
-            onPress={handleSave}
-          >
+          <TouchableOpacity style={styles.primaryButton} onPress={handleSave}>
             <MaterialIcons name="save" size={20} color="#fff" />
             <Text style={styles.primaryButtonText}>
               {isEditing ? "Update Outfit" : "Create Outfit"}
@@ -459,8 +465,6 @@ export default function OutfitCreatorScreen({ route, navigation }) {
         {/* Bottom spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-
-      <BottomBar navigation={navigation} />
     </View>
   );
 }
@@ -745,6 +749,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   bottomSpacing: {
-    height: 100,
+    height: 50,
   },
 });
