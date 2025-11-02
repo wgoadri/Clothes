@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export default function FilterBar({ filterType, setFilterType }) {
+export default function OutfitsFilterBar({ filterType, setFilterType }) {
   const filters = [
     { type: "all", label: "All", icon: "apps" },
     { type: "favorites", label: "Favorites", icon: "favorite" },
