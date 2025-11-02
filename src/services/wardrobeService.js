@@ -278,3 +278,43 @@ export const deleteWardrobeItem = async (userId, itemId) => {
     throw error;
   }
 };
+
+export const updateOutfit = async (userId, outfitId, updateData) => {
+  try {
+    const outfitRef = doc(db, "users", userId, "outfits", outfitId);
+    await updateDoc(outfitRef, {
+      ...updateData,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error updating outfit:", error);
+    throw error;
+  }
+};
+
+export const getOutfitStats = async (userId, outfitId) => {
+  try {
+    const logsRef = collection(db, "users", userId, "dailyLogs");
+    const q = query(logsRef, where("outfitId", "==", outfitId));
+    const snapshot = await getDocs(q);
+    
+    const logs = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return {
+      totalWears: logs.length,
+      averageRating: logs.length > 0 
+        ? logs.reduce((sum, log) => sum + (log.rating || 0), 0) / logs.length 
+        : 0,
+      lastWorn: logs.length > 0 
+        ? logs.sort((a, b) => new Date(b.date) - new Date(a.date))[0].date 
+        : null,
+      wearHistory: logs.sort((a, b) => new Date(b.date) - new Date(a.date))
+    };
+  } catch (error) {
+    console.error("Error getting outfit stats:", error);
+    return null;
+  }
+};
