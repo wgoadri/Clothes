@@ -45,7 +45,7 @@ export default function AppNavigator() {
         <Stack.Screen
           name="TrackUsage"
           component={TrackUsageScreen}
-          options={{ headerShown: true }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Outfits"
