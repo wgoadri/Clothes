@@ -13,7 +13,7 @@ import {
 import { MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
-import { getItemStats } from "../services/wardrobeService";
+import { getItemStats } from "../services/usageService";
 import BottomBar from "../components/BottomBar";
 
 export default function ClothesDetailScreen({ route, navigation }) {

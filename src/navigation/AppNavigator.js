@@ -32,7 +32,11 @@ export default function AppNavigator() {
           component={HomeScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="AddClothes" component={AddClothesScreen} />
+        <Stack.Screen
+          name="AddClothes"
+          component={AddClothesScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Wardrobe"
           component={WardrobeScreen}
@@ -48,7 +52,11 @@ export default function AppNavigator() {
           component={OutfitsScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="OutfitCreator" component={OutfitCreatorScreen} />
+        <Stack.Screen
+          name="OutfitCreator"
+          component={OutfitCreatorScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="DailyOutfitLogger"
           component={DailyOutfitLoggerScreen}

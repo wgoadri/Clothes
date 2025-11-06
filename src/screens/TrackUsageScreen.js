@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { auth } from "../services/firebase";
-import { getOutfits, logOutfitUsage } from "../services/wardrobeService";
+import { getOutfits, logOutfitUsage } from "../services/outfitService";
 import { useNavigation } from "@react-navigation/native";
 
 export default function TrackUsageScreen() {

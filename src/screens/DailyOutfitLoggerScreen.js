@@ -12,11 +12,8 @@ import {
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { auth } from "../services/firebase";
-import { 
-  getOutfits, 
-  logDailyOutfit, 
-  getTodayOutfit 
-} from "../services/wardrobeService";
+import { getOutfits } from "../services/outfitService";
+import { logDailyOutfit, getTodayOutfit } from "../services/usageService";
 
 export default function DailyOutfitLoggerScreen({ navigation }) {
   const [selectedOutfit, setSelectedOutfit] = useState(null);
@@ -34,14 +31,14 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
   const fetchData = async () => {
     const [outfitsData, todayData] = await Promise.all([
       getOutfits(userId),
-      getTodayOutfit(userId)
+      getTodayOutfit(userId),
     ]);
-    
+
     setOutfits(outfitsData);
     setTodayLog(todayData);
-    
+
     if (todayData) {
-      setSelectedOutfit(outfitsData.find(o => o.id === todayData.outfitId));
+      setSelectedOutfit(todayData.outfit);
       setRating(todayData.rating || 0);
       setNotes(todayData.notes || "");
       setPhotos(todayData.photos || []);
@@ -56,7 +53,7 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
     });
 
     if (!result.canceled) {
-      setPhotos(prev => [...prev, result.assets[0].uri]);
+      setPhotos((prev) => [...prev, result.assets[0].uri]);
     }
   };
 
@@ -67,23 +64,17 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
     }
 
     const logData = {
-      date: new Date().toISOString().split('T')[0],
       outfitId: selectedOutfit.id,
-      outfitName: selectedOutfit.name,
-      items: selectedOutfit.items,
       rating,
       notes,
       photos,
-      occasion: "daily"
     };
 
     try {
       await logDailyOutfit(userId, logData);
-      Alert.alert(
-        "Outfit logged! 🎉", 
-        "Your daily outfit has been saved.",
-        [{ text: "OK", onPress: () => navigation.goBack() }]
-      );
+      Alert.alert("Outfit logged! 🎉", "Your daily outfit has been saved.", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
     } catch (error) {
       Alert.alert("Error", "Failed to save outfit log.");
     }
@@ -119,13 +110,17 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
             key={outfit.id}
             style={[
               styles.outfitCard,
-              selectedOutfit?.id === outfit.id && styles.selectedOutfit
+              selectedOutfit?.id === outfit.id && styles.selectedOutfit,
             ]}
             onPress={() => setSelectedOutfit(outfit)}
           >
             <View style={styles.previewRow}>
               {outfit.previewImages?.slice(0, 2).map((uri, index) => (
-                <Image key={index} source={{ uri }} style={styles.miniPreview} />
+                <Image
+                  key={index}
+                  source={{ uri }}
+                  style={styles.miniPreview}
+                />
               ))}
             </View>
             <Text style={styles.outfitName}>{outfit.name}</Text>
@@ -154,7 +149,7 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
           <MaterialIcons name="camera-alt" size={24} color="#007AFF" />
           <Text style={styles.photoButtonText}>Take Photo</Text>
         </TouchableOpacity>
-        
+
         <ScrollView horizontal>
           {photos.map((uri, index) => (
             <Image key={index} source={{ uri }} style={styles.photoPreview} />

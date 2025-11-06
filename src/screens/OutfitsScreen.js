@@ -11,8 +11,8 @@ import {
   getOutfits,
   deleteOutfit,
   toggleOutfitFavorite,
-  logDailyOutfit,
-} from "../services/wardrobeService";
+} from "../services/outfitService";
+import { logDailyOutfit } from "../services/usageService";
 
 export default function OutfitsScreen({ navigation }) {
   const [outfits, setOutfits] = useState([]);
@@ -114,19 +114,8 @@ export default function OutfitsScreen({ navigation }) {
   };
 
   const handleWearToday = async (outfit) => {
-    const logData = {
-      date: new Date().toISOString().split("T")[0],
-      outfitId: outfit.id,
-      outfitName: outfit.name,
-      items: outfit.items || [],
-      rating: 0,
-      notes: "",
-      photos: [],
-      occasion: "daily",
-    };
-
     try {
-      await logDailyOutfit(userId, logData);
+      await logDailyOutfit(userId, { outfitId: outfit.id });
       Alert.alert(
         "Outfit logged! 🎉",
         `"${outfit.name}" has been logged for today. You can add rating and photos later.`,

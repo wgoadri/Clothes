@@ -46,8 +46,6 @@ export default function AddClothesScreen({ navigation }) {
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [colorModalVisible, setColorModalVisible] = useState(false);
   const [sizeModalVisible, setSizeModalVisible] = useState(false);
-  const [seasonModalVisible, setSeasonModalVisible] = useState(false);
-  const [occasionModalVisible, setOccasionModalVisible] = useState(false);
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -201,19 +199,31 @@ export default function AddClothesScreen({ navigation }) {
     setCareInstructions("");
   };
 
-  const filteredCategories = CLOTHES_CATEGORIES;
   const renderCategoryModal = () => (
-    <Modal visible={categoryModalVisible} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+    <Modal
+      visible={categoryModalVisible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setCategoryModalVisible(false)}
+    >
+      <View style={styles.fullModalOverlay}>
+        <TouchableOpacity
+          style={styles.modalBackdrop}
+          activeOpacity={1}
+          onPress={() => setCategoryModalVisible(false)}
+        />
+        <View style={styles.modalContentContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select Category</Text>
-            <TouchableOpacity onPress={() => setCategoryModalVisible(false)}>
+            <TouchableOpacity
+              onPress={() => setCategoryModalVisible(false)}
+              style={styles.closeButton}
+            >
               <MaterialIcons name="close" size={24} color="#666" />
             </TouchableOpacity>
           </View>
           <FlatList
-            data={filteredCategories}
+            data={CLOTHES_CATEGORIES}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -233,19 +243,34 @@ export default function AddClothesScreen({ navigation }) {
                 )}
               </TouchableOpacity>
             )}
+            style={styles.modalList}
           />
+          <Text style={{ height: 20 }}>Debug spacing</Text>
         </View>
       </View>
     </Modal>
   );
 
   const renderColorModal = () => (
-    <Modal visible={colorModalVisible} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+    <Modal
+      visible={colorModalVisible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setColorModalVisible(false)}
+    >
+      <View style={styles.fullModalOverlay}>
+        <TouchableOpacity
+          style={styles.modalBackdrop}
+          activeOpacity={1}
+          onPress={() => setColorModalVisible(false)}
+        />
+        <View style={styles.modalContentContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select Color</Text>
-            <TouchableOpacity onPress={() => setColorModalVisible(false)}>
+            <TouchableOpacity
+              onPress={() => setColorModalVisible(false)}
+              style={styles.closeButton}
+            >
               <MaterialIcons name="close" size={24} color="#666" />
             </TouchableOpacity>
           </View>
@@ -270,25 +295,39 @@ export default function AddClothesScreen({ navigation }) {
                 <Text style={styles.colorName}>{item.name}</Text>
               </TouchableOpacity>
             )}
+            style={styles.modalList}
+            contentContainerStyle={styles.colorGridContainer}
           />
         </View>
       </View>
     </Modal>
   );
 
-  const sizes = SIZES;
   const renderSizeModal = () => (
-    <Modal visible={sizeModalVisible} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+    <Modal
+      visible={sizeModalVisible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setSizeModalVisible(false)}
+    >
+      <View style={styles.fullModalOverlay}>
+        <TouchableOpacity
+          style={styles.modalBackdrop}
+          activeOpacity={1}
+          onPress={() => setSizeModalVisible(false)}
+        />
+        <View style={styles.modalContentContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select Size</Text>
-            <TouchableOpacity onPress={() => setSizeModalVisible(false)}>
+            <TouchableOpacity
+              onPress={() => setSizeModalVisible(false)}
+              style={styles.closeButton}
+            >
               <MaterialIcons name="close" size={24} color="#666" />
             </TouchableOpacity>
           </View>
           <FlatList
-            data={sizes}
+            data={SIZES}
             numColumns={4}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
@@ -312,22 +351,31 @@ export default function AddClothesScreen({ navigation }) {
                 </Text>
               </TouchableOpacity>
             )}
+            style={styles.modalList}
+            contentContainerStyle={styles.sizeGridContainer}
           />
         </View>
       </View>
     </Modal>
   );
 
-  const seasonsCategories = SEASONS;
-  const occasionsCategories = OCCASIONS;
-
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
       >
-        <Text style={styles.title}>👕 Add New Item</Text>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <MaterialIcons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Add New Item</Text>
+          <TouchableOpacity onPress={handleAdd}>
+            <Text style={styles.saveButton}>Save</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Image Section */}
         <View style={styles.imageSection}>
@@ -475,7 +523,7 @@ export default function AddClothesScreen({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🌤️ Suitable Seasons</Text>
           <View style={styles.chipContainer}>
-            {seasonsCategories.map((season) => (
+            {SEASONS.map((season) => (
               <TouchableOpacity
                 key={season.id}
                 style={[
@@ -506,7 +554,7 @@ export default function AddClothesScreen({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🎭 Suitable Occasions</Text>
           <View style={styles.chipContainer}>
-            {occasionsCategories.map((occasion) => (
+            {OCCASIONS.map((occasion) => (
               <TouchableOpacity
                 key={occasion.id}
                 style={[
@@ -565,7 +613,7 @@ export default function AddClothesScreen({ navigation }) {
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.secondaryButton} onPress={resetForm}>
             <MaterialIcons name="refresh" size={20} color="#007AFF" />
-            <Text style={styles.secondaryButtonText}>Reset Form</Text>
+            <Text style={styles.secondaryButtonText}>Reset</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.primaryButton} onPress={handleAdd}>
@@ -574,7 +622,7 @@ export default function AddClothesScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Bottom spacing for BottomBar */}
+        {/* Bottom spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
 
@@ -593,13 +641,28 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 20,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    paddingTop: 60,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 24,
-    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333",
+  },
+  saveButton: {
+    color: "#007AFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
 
   // Image Section
@@ -780,18 +843,31 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 
-  // Modal Styles
-  modalOverlay: {
+  // MODAL STYLES - Full screen overlay
+  fullModalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     justifyContent: "flex-end",
   },
-  modalContent: {
+  modalBackdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  modalContentContainer: {
     backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    minHeight: "60%",
     maxHeight: "80%",
     paddingBottom: 20,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   modalHeader: {
     flexDirection: "row",
@@ -804,6 +880,13 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "600",
+    color: "#333",
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalList: {
+    flexGrow: 1,
   },
   modalItem: {
     flexDirection: "row",
@@ -819,9 +902,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
     flex: 1,
+    color: "#333",
   },
 
   // Color Modal
+  colorGridContainer: {
+    padding: 12,
+  },
   colorItem: {
     flex: 1,
     alignItems: "center",
@@ -830,25 +917,31 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#e9ecef",
+    minWidth: 100,
   },
   selectedColorItem: {
     borderColor: "#007AFF",
+    borderWidth: 2,
     backgroundColor: "#f0f8ff",
   },
   colorCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginBottom: 4,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginBottom: 6,
     borderWidth: 1,
     borderColor: "#ddd",
   },
   colorName: {
     fontSize: 12,
     textAlign: "center",
+    color: "#333",
   },
 
   // Size Modal
+  sizeGridContainer: {
+    padding: 12,
+  },
   sizeItem: {
     flex: 1,
     alignItems: "center",
@@ -858,10 +951,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e9ecef",
     minHeight: 50,
+    minWidth: 70,
     justifyContent: "center",
   },
   selectedSizeItem: {
     borderColor: "#007AFF",
+    borderWidth: 2,
     backgroundColor: "#007AFF",
   },
   sizeText: {
@@ -871,9 +966,10 @@ const styles = StyleSheet.create({
   },
   selectedSizeText: {
     color: "#fff",
+    fontWeight: "600",
   },
 
   bottomSpacing: {
-    height: 50, // Space for BottomBar
+    height: 80,
   },
 });

@@ -7,6 +7,7 @@ import ScreenLayout from "../components/ScreenLayout";
 import ClothesStatsBar from "../components/ClothesStatsBar";
 import SearchBar from "../components/SearchBar";
 import ClothesFilterBar from "../components/ClothesFilterBar";
+import EmptyState from "../components/EmptyState";
 
 export default function WardrobeScreen({ navigation }) {
   const [clothes, setClothes] = useState([]);
@@ -96,6 +97,7 @@ export default function WardrobeScreen({ navigation }) {
           />
         )}
         contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={renderEmptyState}
         refreshing={loading}
         onRefresh={fetchWardrobe}
       />

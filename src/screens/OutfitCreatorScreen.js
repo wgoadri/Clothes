@@ -15,7 +15,6 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { addDoc, collection, updateDoc, doc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import { getWardrobeItems } from "../services/wardrobeService";
-import BottomBar from "../components/BottomBar";
 
 const SEASONS = [
   { id: 'spring', name: 'Spring', icon: 'flower-outline' },

@@ -14,7 +14,8 @@ import {
 import { MaterialIcons, FontAwesome, AntDesign } from "@expo/vector-icons";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
-import { getWardrobeItems, logDailyOutfit } from "../services/wardrobeService";
+import { getWardrobeItems } from "../services/wardrobeService";
+import { logDailyOutfit } from "../services/outfitService";
 import BottomBar from "../components/BottomBar";
 
 export default function OutfitDetailScreen({ route, navigation }) {
@@ -84,19 +85,8 @@ export default function OutfitDetailScreen({ route, navigation }) {
   };
 
   const handleWearToday = async () => {
-    const logData = {
-      date: new Date().toISOString().split("T")[0],
-      outfitId: currentOutfit.id,
-      outfitName: currentOutfit.name,
-      items: currentOutfit.items || [],
-      rating: 0,
-      notes: "",
-      photos: [],
-      occasion: "daily",
-    };
-
     try {
-      await logDailyOutfit(userId, logData);
+      await logDailyOutfit(userId, { outfitId: currentOutfit.id });
       Alert.alert(
         "Outfit logged! 🎉",
         `"${currentOutfit.name}" has been logged for today. You can add rating and photos later.`,
