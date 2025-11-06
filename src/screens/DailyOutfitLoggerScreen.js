@@ -102,7 +102,7 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
         📅 Today's Outfit {todayLog ? "(Already logged)" : ""}
       </Text>
 
-      {/* Sélection d'outfit */}
+      {/* Outfit Selection */}
       <Text style={styles.sectionTitle}>Choose your outfit:</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {outfits.map((outfit) => (
@@ -111,7 +111,9 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
             style={[
               styles.outfitCard,
               selectedOutfit?.id === outfit.id && styles.selectedOutfit,
+              todayLog && styles.disabled, // disable selection
             ]}
+            disabled={!!todayLog} // disable selection if already logged
             onPress={() => setSelectedOutfit(outfit)}
           >
             <View style={styles.previewRow}>
@@ -130,39 +132,61 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
 
       {/* Rating */}
       <Text style={styles.sectionTitle}>How did it feel?</Text>
-      {renderStars()}
+      {todayLog ? (
+        <Text style={styles.readOnlyText}>Rating: {todayLog.rating || 0}</Text>
+      ) : (
+        renderStars()
+      )}
 
       {/* Notes */}
-      <Text style={styles.sectionTitle}>Notes (optional):</Text>
-      <TextInput
-        style={styles.notesInput}
-        placeholder="How was your day? Any compliments?"
-        value={notes}
-        onChangeText={setNotes}
-        multiline
-      />
+      <Text style={styles.sectionTitle}>Notes:</Text>
+      {todayLog ? (
+        <Text style={styles.readOnlyText}>{todayLog.notes || "-"}</Text>
+      ) : (
+        <TextInput
+          style={styles.notesInput}
+          placeholder="How was your day? Any compliments?"
+          value={notes}
+          onChangeText={setNotes}
+          multiline
+        />
+      )}
 
       {/* Photos */}
       <View style={styles.photoSection}>
-        <Text style={styles.sectionTitle}>Add photos:</Text>
-        <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
-          <MaterialIcons name="camera-alt" size={24} color="#007AFF" />
-          <Text style={styles.photoButtonText}>Take Photo</Text>
-        </TouchableOpacity>
+        <Text style={styles.sectionTitle}>Photos:</Text>
+        {todayLog ? (
+          <ScrollView horizontal>
+            {todayLog.photos?.map((uri, index) => (
+              <Image key={index} source={{ uri }} style={styles.photoPreview} />
+            ))}
+          </ScrollView>
+        ) : (
+          <>
+            <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
+              <MaterialIcons name="camera-alt" size={24} color="#007AFF" />
+              <Text style={styles.photoButtonText}>Take Photo</Text>
+            </TouchableOpacity>
 
-        <ScrollView horizontal>
-          {photos.map((uri, index) => (
-            <Image key={index} source={{ uri }} style={styles.photoPreview} />
-          ))}
-        </ScrollView>
+            <ScrollView horizontal>
+              {photos.map((uri, index) => (
+                <Image
+                  key={index}
+                  source={{ uri }}
+                  style={styles.photoPreview}
+                />
+              ))}
+            </ScrollView>
+          </>
+        )}
       </View>
 
       {/* Save Button */}
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>
-          {todayLog ? "Update Today's Log" : "Log Today's Outfit"}
-        </Text>
-      </TouchableOpacity>
+      {!todayLog && (
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.saveButtonText}>Log Today's Outfit</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 }
@@ -184,6 +208,14 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 20,
     marginBottom: 10,
+  },
+  readOnlyText: {
+    fontSize: 16,
+    color: "#333",
+    marginVertical: 8,
+  },
+  disabled: {
+    opacity: 0.5,
   },
   outfitCard: {
     backgroundColor: "#f8f8f8",
