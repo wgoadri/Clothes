@@ -85,7 +85,7 @@ export default function WardrobeScreen({ navigation }) {
   );
 
   return (
-    <ScreenLayout navigation={navigation} title="Wardrobe">
+    <ScreenLayout navigation={navigation} title="Wardrobe" usesFlatList={true}>
       <FlatList
         data={filteredClothes}
         ListHeaderComponent={renderHeader}

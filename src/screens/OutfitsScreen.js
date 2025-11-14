@@ -168,7 +168,7 @@ export default function OutfitsScreen({ navigation }) {
   );
 
   return (
-    <ScreenLayout navigation={navigation} title="Outfits">
+    <ScreenLayout navigation={navigation} title="Outfits" usesFlatList={true}>
       <FlatList
         data={filteredOutfits}
         keyExtractor={(item) => item.id}

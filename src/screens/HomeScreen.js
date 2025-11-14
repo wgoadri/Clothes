@@ -121,126 +121,125 @@ export default function HomeScreen({ navigation }) {
   if (!metrics) return <Text style={styles.loading}>Loading metrics...</Text>;
 
   return (
-    <ScreenLayout navigation={navigation} title="My Closet">
-      <ScrollView
-        style={styles.scrollContainer}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Header Summary */}
-        <View style={styles.headerSummary}>
-          <Text style={styles.headerTitle}>👋 Welcome back!</Text>
-          <Text style={styles.headerSubtitle}>
-            {todayOutfit
-              ? `You've logged today's outfit: ${todayOutfit.outfit.name}`
-              : "You haven't logged your outfit yet today."}
-          </Text>
-        </View>
+    <ScreenLayout
+      navigation={navigation}
+      title="My Closet"
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      {/* Remove ScrollView - just put content directly */}
 
-        {/* Today's Outfit Widget */}
-        <TodayOutfitWidget />
-
-        {/* Quick Stats */}
-        <View style={styles.quickStats}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{wardrobe.length}</Text>
-            <Text style={styles.statLabel}>Items</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{outfits.length}</Text>
-            <Text style={styles.statLabel}>Outfits</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{metrics.totalDays || 0}</Text>
-            <Text style={styles.statLabel}>Days Logged</Text>
-          </View>
-        </View>
-
-        {/* Small secondary info row */}
-        <Text style={styles.lastLogText}>
-          Last logged on {metrics.lastLogDate}
+      {/* Header Summary */}
+      <View style={styles.headerSummary}>
+        <Text style={styles.headerTitle}>👋 Welcome back!</Text>
+        <Text style={styles.headerSubtitle}>
+          {todayOutfit
+            ? `You've logged today's outfit: ${todayOutfit.outfit.name}`
+            : "You haven't logged your outfit yet today."}
         </Text>
+      </View>
 
-        {/* Highlights */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🌟 Highlights</Text>
-          <View style={styles.highlightCards}>
-            <View style={styles.highlightCard}>
-              <Text style={styles.highlightLabel}>Most worn item</Text>
-              <Text style={styles.highlightValue}>
-                {metrics.topItems?.[0]?.name || "No data"}
-              </Text>
-            </View>
-            <View style={styles.highlightCard}>
-              <Text style={styles.highlightLabel}>Favorite outfit</Text>
-              <Text style={styles.highlightValue}>
-                {outfits.find((o) => o.favorite)?.name || "None yet"}
-              </Text>
-            </View>
+      {/* Today's Outfit Widget */}
+      <TodayOutfitWidget />
+
+      {/* Quick Stats */}
+      <View style={styles.quickStats}>
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{wardrobe.length}</Text>
+          <Text style={styles.statLabel}>Items</Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{outfits.length}</Text>
+          <Text style={styles.statLabel}>Outfits</Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{metrics.totalDays || 0}</Text>
+          <Text style={styles.statLabel}>Days Logged</Text>
+        </View>
+      </View>
+
+      <Text style={styles.lastLogText}>
+        Last logged on {metrics.lastLogDate}
+      </Text>
+
+      {/* Highlights */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>🌟 Highlights</Text>
+        <View style={styles.highlightCards}>
+          <View style={styles.highlightCard}>
+            <Text style={styles.highlightLabel}>Most worn item</Text>
+            <Text style={styles.highlightValue}>
+              {metrics.topItems?.[0]?.name || "No data"}
+            </Text>
+          </View>
+          <View style={styles.highlightCard}>
+            <Text style={styles.highlightLabel}>Favorite outfit</Text>
+            <Text style={styles.highlightValue}>
+              {outfits.find((o) => o.favorite)?.name || "None yet"}
+            </Text>
           </View>
         </View>
+      </View>
 
-        {/* Wardrobe Preview */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>👕 Wardrobe Preview</Text>
-          <FlatList
-            horizontal
-            data={wardrobe.slice(0, 10)}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.previewCard}>
-                {item.image ? (
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.previewImage}
-                  />
-                ) : (
-                  <View style={styles.previewPlaceholder}>
-                    <Text style={styles.previewText}>{item.name}</Text>
-                  </View>
-                )}
-              </View>
-            )}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-
-        {/* Usage Insights */}
-        <Text style={styles.sectionTitle}>📊 Usage Insights</Text>
-
-        <Text style={styles.subsectionTitle}>Most Worn Outfits</Text>
-        {metrics.topOutfits.length === 0 ? (
-          <Text style={styles.empty}>No outfit logs yet.</Text>
-        ) : (
-          metrics.topOutfits.slice(0, 5).map((o, idx) => (
-            <View key={idx} style={styles.itemRow}>
-              <Text style={styles.itemName}>{o.name}</Text>
-              <Text style={styles.itemCount}>{o.count} times</Text>
+      {/* Wardrobe Preview */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>👕 Wardrobe Preview</Text>
+        <FlatList
+          horizontal
+          data={wardrobe.slice(0, 10)}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.previewCard}>
+              {item.image ? (
+                <Image
+                  source={{ uri: item.image }}
+                  style={styles.previewImage}
+                />
+              ) : (
+                <View style={styles.previewPlaceholder}>
+                  <Text style={styles.previewText}>{item.name}</Text>
+                </View>
+              )}
             </View>
-          ))
-        )}
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
 
-        <Text style={styles.subsectionTitle}>Most Worn Clothes</Text>
-        {metrics.topItems.length === 0 ? (
-          <Text style={styles.empty}>No wardrobe usage yet.</Text>
-        ) : (
-          metrics.topItems.slice(0, 5).map((i, idx) => (
-            <View key={idx} style={styles.itemRow}>
-              <Text style={styles.itemName}>{i.name}</Text>
-              <Text style={styles.itemCount}>{i.count} times</Text>
-            </View>
-          ))
-        )}
-      </ScrollView>
+      {/* Usage Insights */}
+      <Text style={styles.sectionTitle}>📊 Usage Insights</Text>
+
+      <Text style={styles.subsectionTitle}>Most Worn Outfits</Text>
+      {metrics.topOutfits.length === 0 ? (
+        <Text style={styles.empty}>No outfit logs yet.</Text>
+      ) : (
+        metrics.topOutfits.slice(0, 5).map((o, idx) => (
+          <View key={idx} style={styles.itemRow}>
+            <Text style={styles.itemName}>{o.name}</Text>
+            <Text style={styles.itemCount}>{o.count} times</Text>
+          </View>
+        ))
+      )}
+
+      <Text style={styles.subsectionTitle}>Most Worn Clothes</Text>
+      {metrics.topItems.length === 0 ? (
+        <Text style={styles.empty}>No wardrobe usage yet.</Text>
+      ) : (
+        metrics.topItems.slice(0, 5).map((i, idx) => (
+          <View key={idx} style={styles.itemRow}>
+            <Text style={styles.itemName}>{i.name}</Text>
+            <Text style={styles.itemCount}>{i.count} times</Text>
+          </View>
+        ))
+      )}
     </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: { padding: 16 },
   loading: { textAlign: "center", marginTop: 50 },
   headerSummary: { marginBottom: 16 },
   headerTitle: { fontSize: 20, fontWeight: "700", marginBottom: 4 },

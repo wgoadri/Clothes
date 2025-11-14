@@ -6,12 +6,17 @@ import {
   Text,
   Modal,
   Dimensions,
+  Platform,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { modalStyles } from "../styles/components/modals";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
 export default function BottomBar({ navigation }) {
+  const insets = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleAddPress = () => setModalVisible(true);
@@ -24,97 +29,188 @@ export default function BottomBar({ navigation }) {
   return (
     <>
       <View style={styles.container}>
+        {/* Subtle gradient background */}
+        <LinearGradient
+          colors={["rgba(255, 255, 255, 0)", "rgba(245, 237, 230, 0.2)"]}
+          style={styles.gradientBackground}
+        />
+
         {/* Home */}
         <TouchableOpacity
-          style={styles.extremLeftButton}
+          style={styles.tabButton}
           onPress={() => navigation.navigate("Home")}
         >
-          <Ionicons name="home-outline" size={26} color="#333" />
+          <View style={styles.iconContainer}>
+            <Ionicons name="home-outline" size={24} color="#8B7355" />
+          </View>
+          <Text style={styles.tabLabel}>Home</Text>
         </TouchableOpacity>
 
         {/* Wardrobe */}
         <TouchableOpacity
-          style={styles.leftButton}
+          style={styles.tabButton}
           onPress={() => navigation.navigate("Wardrobe")}
         >
-          <Ionicons name="shirt-outline" size={26} color="#333" />
+          <View style={styles.iconContainer}>
+            <Ionicons name="shirt-outline" size={24} color="#8B7355" />
+          </View>
+          <Text style={styles.tabLabel}>Wardrobe</Text>
         </TouchableOpacity>
 
-        {/* Center circular Add button */}
+        {/* Center circular Add button - Luxury version */}
         <View style={styles.centerButtonWrapper}>
           <TouchableOpacity
             style={styles.centerButton}
             onPress={handleAddPress}
+            activeOpacity={0.85}
           >
-            <Ionicons name="add" size={34} color="#fff" />
+            <LinearGradient
+              colors={["#D4A88C", "#C89B7F", "#B88A6F"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.centerGradient}
+            >
+              <Ionicons name="add" size={32} color="#FAF8F5" />
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
         {/* Outfits */}
         <TouchableOpacity
-          style={styles.RightButton}
+          style={styles.tabButton}
           onPress={() => navigation.navigate("Outfits")}
         >
-          <Ionicons name="star-outline" size={26} color="#333" />
+          <View style={styles.iconContainer}>
+            <Ionicons name="star-outline" size={24} color="#8B7355" />
+          </View>
+          <Text style={styles.tabLabel}>Outfits</Text>
         </TouchableOpacity>
 
         {/* Track usage */}
         <TouchableOpacity
-          style={styles.extremRightButton}
+          style={styles.tabButton}
           onPress={() => navigation.navigate("TrackUsage")}
         >
-          <Ionicons name="calendar-outline" size={26} color="#333" />
+          <View style={styles.iconContainer}>
+            <Ionicons name="calendar-outline" size={24} color="#8B7355" />
+          </View>
+          <Text style={styles.tabLabel}>Track</Text>
         </TouchableOpacity>
       </View>
 
-      {/* MODAL */}
+      {/* LUXURY MODAL */}
       <Modal
         visible={modalVisible}
         transparent
         animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>What do you want to do?</Text>
+        <View style={modalStyles.modalOverlay}>
+          <TouchableOpacity
+            style={modalStyles.overlayTouchable}
+            activeOpacity={1}
+            onPress={() => setModalVisible(false)}
+          />
+
+          <View style={modalStyles.modalContent}>
+            {/* Decorative element */}
+            <View style={modalStyles.modalDecoration} />
+
+            <Text style={modalStyles.modalTitle}>Create Something New</Text>
+            <Text style={modalStyles.modalSubtitle}>
+              What would you like to add?
+            </Text>
 
             <TouchableOpacity
-              style={[styles.modalButton, styles.primaryButton]}
+              style={[modalStyles.modalButton, modalStyles.primaryButton]}
               onPress={() => handleOption("DailyOutfitLogger")}
             >
-              <View style={styles.buttonContent}>
-                <MaterialIcons name="today" size={20} color="#fff" />
-                <Text style={styles.modalButtonText}>Log Today's Outfit</Text>
-              </View>
+              <LinearGradient
+                colors={["#B8A89A", "#A89888"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={modalStyles.buttonGradient}
+              >
+                <View style={modalStyles.buttonIconCircle}>
+                  <MaterialIcons name="today" size={22} color="#8B7355" />
+                </View>
+                <View style={modalStyles.buttonTextContainer}>
+                  <Text style={modalStyles.modalButtonText}>
+                    Log Today's Outfit
+                  </Text>
+                  <Text style={modalStyles.modalButtonSubtext}>
+                    Record what you wore
+                  </Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color="rgba(255,255,255,0.7)"
+                />
+              </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.modalButton}
+              style={modalStyles.modalButton}
               onPress={() => handleOption("AddClothes")}
             >
-              <View style={styles.buttonContent}>
-                <Ionicons name="shirt-outline" size={20} color="#fff" />
-                <Text style={styles.modalButtonText}>Add New Item</Text>
-              </View>
+              <LinearGradient
+                colors={["#C4B5A0", "#B5A690"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={modalStyles.buttonGradient}
+              >
+                <View style={modalStyles.buttonIconCircle}>
+                  <Ionicons name="shirt-outline" size={22} color="#8B7355" />
+                </View>
+                <View style={modalStyles.buttonTextContainer}>
+                  <Text style={modalStyles.modalButtonText}>Add New Item</Text>
+                  <Text style={modalStyles.modalButtonSubtext}>
+                    Expand your wardrobe
+                  </Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color="rgba(255,255,255,0.7)"
+                />
+              </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.modalButton}
+              style={modalStyles.modalButton}
               onPress={() => handleOption("OutfitCreator")}
             >
-              <View style={styles.buttonContent}>
-                <MaterialIcons name="style" size={20} color="#fff" />
-                <Text style={styles.modalButtonText}>Create New Outfit</Text>
-              </View>
+              <LinearGradient
+                colors={["#D4C4B0", "#C4B4A0"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={modalStyles.buttonGradient}
+              >
+                <View style={modalStyles.buttonIconCircle}>
+                  <MaterialIcons name="style" size={22} color="#8B7355" />
+                </View>
+                <View style={modalStyles.buttonTextContainer}>
+                  <Text style={modalStyles.modalButtonText}>
+                    Create New Outfit
+                  </Text>
+                  <Text style={modalStyles.modalButtonSubtext}>
+                    Design your look
+                  </Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color="rgba(255,255,255,0.7)"
+                />
+              </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
+              style={[modalStyles.modalButton, modalStyles.cancelButton]}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={[styles.modalButtonText, { color: "#007AFF" }]}>
-                Cancel
-              </Text>
+              <Text style={modalStyles.cancelButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -128,86 +224,73 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: width,
-    height: 70,
-    backgroundColor: "#fff",
+    height: 85,
+    backgroundColor: "#FAF8F5",
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: "#F0EBE3",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    paddingBottom: Platform.OS === "ios" ? 10 : 8,
+    shadowColor: "#8B7355",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  extremLeftButton: {
-    paddingRight: 0,
+  gradientBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "100%",
   },
-  extremRightButton: {
-    paddingLeft: 0,
+  tabButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    flex: 1,
   },
-  LeftButton: {
-    paddingRight: 60,
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#F5EDE5",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 4,
   },
-  RightButton: {
-    paddingLeft: 60,
+  tabLabel: {
+    fontSize: 11,
+    color: "#8B7355",
+    fontWeight: "400",
+    letterSpacing: 0.3,
+    marginTop: 2,
   },
   centerButtonWrapper: {
     position: "absolute",
-    top: -35,
+    top: -30,
     alignSelf: "center",
     zIndex: 2,
   },
   centerButton: {
-    backgroundColor: "#b64fc4ff",
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    shadowColor: "#8B7355",
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  centerGradient: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 5,
-    elevation: 6,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: 300,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 20,
-  },
-  modalButton: {
-    width: "100%",
-    paddingVertical: 14,
-    backgroundColor: "#007AFF",
-    borderRadius: 8,
-    marginVertical: 6,
-    alignItems: "center",
-  },
-  primaryButton: {
-    backgroundColor: "#28a745",
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  modalButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    marginLeft: 8,
-  },
-  cancelButton: {
-    backgroundColor: "#f0f0f0",
-    marginTop: 10,
+    borderWidth: 3,
+    borderColor: "#FAF8F5",
   },
 });
