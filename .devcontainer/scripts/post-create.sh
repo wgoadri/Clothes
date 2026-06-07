@@ -118,46 +118,96 @@ echo "  Writing Claude Code settings"
 echo "──────────────────────────────────────────────────────"
 
 mkdir -p "$WORKSPACE/.claude"
+
+# ── Project settings.json ─────────────────────────────────────────
+#
+#  Security model: deny the truly dangerous things explicitly,
+#  let defaultMode="default" handle everything else (Claude asks
+#  before running anything not covered by a rule).
+#
+#  Why NOT an allow-list:
+#    An allow-list breaks subagent communication, npm install with
+#    new flags, npx tools, and any command we forget to enumerate.
+#    A deny-list of genuinely dangerous commands is safer AND more
+#    usable — the container itself is already the security boundary.
+#
+#  The one hard rule we keep: git push is blocked at BOTH the
+#  shell wrapper level (zshrc) AND the git hook (pre-push) AND here,
+#  so three independent layers must all fail for a push to succeed.
 cat > "$WORKSPACE/.claude/settings.json" << 'JSON'
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
   "permissions": {
+    "defaultMode": "default",
+
     "allow": [
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git checkout:*)",
       "Bash(git branch:*)",
-      "Bash(git status)",
+      "Bash(git status:*)",
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git fetch:*)",
       "Bash(git stash:*)",
       "Bash(git merge:*)",
       "Bash(git rebase:*)",
-      "Bash(npm:*)",
+      "Bash(git remote:*)",
+      "Bash(git tag:*)",
+      "Bash(npm install:*)",
+      "Bash(npm install --save*)",
+      "Bash(npm install --save-dev*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm fund:*)",
+      "Bash(npm list:*)",
+      "Bash(npm outdated:*)",
       "Bash(npx:*)",
       "Bash(node:*)",
       "Bash(expo:*)",
       "Bash(eas:*)",
+      "Bash(tsc:*)",
+      "Bash(eslint:*)",
+      "Bash(prettier:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(fd:*)",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
       "Bash(rm:*)",
       "Bash(echo:*)",
       "Bash(touch:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(which:*)",
+      "Bash(env:*)",
+      "Bash(printenv:*)",
+      "Bash(jq:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)"
     ],
+
     "deny": [
       "Bash(git push:*)",
       "Bash(git push --force:*)",
-      "Bash(ssh:*)",
-      "Bash(scp:*)",
-      "Bash(curl * | bash:*)",
-      "Bash(wget * | bash:*)",
-      "Bash(sudo rm -rf /*:*)"
+      "Bash(git push --no-verify:*)",
+      "Bash(git commit --no-verify:*)",
+      "Bash(npm publish:*)",
+      "Bash(npm unpublish:*)",
+      "Bash(npm deprecate:*)",
+      "Bash(sudo rm -rf *)",
+      "Bash(chmod 777:*)",
+      "Bash(curl *|* bash:*)",
+      "Bash(curl *|* sh:*)",
+      "Bash(wget *|* bash:*)",
+      "Bash(wget *|* sh:*)",
+      "Bash(curl *| bash:*)",
+      "Bash(wget *| bash:*)"
     ]
   }
 }
