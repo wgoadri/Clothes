@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { Alert, FlatList, StyleSheet } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../services/firebase";
 import WardrobeItemCard from "../components/WardrobeItemCard";
