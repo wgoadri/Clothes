@@ -24,6 +24,7 @@ It defines rules, conventions, and constraints for this project.
 ├── src/                 # App source code
 ├── assets/              # Static assets (images, fonts)
 ├── package.json
+├── tsconfig.json
 └── CLAUDE.md            # ← you are here
 ```
 
@@ -32,7 +33,7 @@ It defines rules, conventions, and constraints for this project.
 ## 🛠 Tech stack
 
 - **Framework**: Expo (React Native)
-- **Language**: JavaScript (ES2021+)
+- **Language**: TypeScript
 - **Package manager**: npm
 - **Runtime**: Node.js 22
 
@@ -56,10 +57,12 @@ It defines rules, conventions, and constraints for this project.
 - **Indentation**: 2 spaces
 - **Quotes**: single quotes in JS/TS
 - **Max line length**: 100 characters
+- Always add types — avoid `any`.
 
 ---
 
 ## 🧪 Before committing
 
-- Run `npm run lint` and fix all errors before every commit.
+- Run `npm run lint` and fix all errors.
+- Run `npm run typecheck` (if available).
 - Keep commits small and atomic.
