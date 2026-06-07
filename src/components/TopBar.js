@@ -1,17 +1,10 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Modal,
-  Animated,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { globalStyles } from "../styles/globalStyles";
 import { modalStyles } from "../styles/components/modals";
+import { topBarStyles } from "../styles/components/topBar";
 
 export default function TopBar({ navigation, title = "Clothes" }) {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -23,41 +16,41 @@ export default function TopBar({ navigation, title = "Clothes" }) {
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={topBarStyles.container}>
         {/* Subtle gradient overlay */}
         <LinearGradient
           colors={["rgba(245, 237, 230, 0.3)", "rgba(255, 255, 255, 0)"]}
-          style={styles.gradientOverlay}
+          style={topBarStyles.gradientOverlay}
         />
 
         {/* Avatar with luxury border */}
         <TouchableOpacity
           onPress={() => handleNavigate("Profile")}
-          style={styles.avatarContainer}
+          style={topBarStyles.avatarContainer}
         >
-          <View style={styles.avatarBorder}>
+          <View style={topBarStyles.avatarBorder}>
             <Image
               source={{
                 uri: "https://i.pravatar.cc/150?img=12",
               }}
-              style={styles.avatar}
+              style={topBarStyles.avatar}
             />
           </View>
         </TouchableOpacity>
 
         {/* Title with elegant typography */}
-        <Text style={styles.title}>{title}</Text>
+        <Text style={topBarStyles.title}>{title}</Text>
 
         {/* Menu Button with subtle background */}
         <TouchableOpacity
           onPress={() => setMenuVisible(true)}
-          style={styles.menuButton}
+          style={topBarStyles.menuButton}
         >
           <Ionicons name="menu-outline" size={26} color="#8B7355" />
         </TouchableOpacity>
       </View>
 
-      {/* LUXURY MENU MODAL */}
+      {/* MENU MODAL */}
       <Modal
         visible={menuVisible}
         transparent
@@ -129,67 +122,3 @@ export default function TopBar({ navigation, title = "Clothes" }) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height: 80,
-    backgroundColor: "#FAF8F5",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0EBE3",
-    shadowColor: "#8B7355",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  gradientOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "100%",
-  },
-  avatarContainer: {
-    zIndex: 1,
-  },
-  avatarBorder: {
-    padding: 3,
-    borderRadius: 24,
-    backgroundColor: "linear-gradient(135deg, #E8DED2, #F5E6D8)",
-    borderWidth: 2,
-    borderColor: "#F5E6D8",
-    shadowColor: "#8B7355",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-  },
-  title: {
-    ...globalStyles.title,
-    textTransform: "uppercase",
-    zIndex: 1,
-  },
-  menuButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#F5EDE5",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#8B7355",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-    zIndex: 1,
-  },
-});

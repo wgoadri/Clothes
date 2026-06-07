@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -13,8 +12,10 @@ import {
 import { MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
-import { getItemStats } from "../services/usageService";
+import { getItemStats } from "../services/statsService";
 import BottomBar from "../components/BottomBar";
+import { sharedDetailStyles } from "../styles/shared/detail";
+import { clothesDetailStyles } from "../styles/screens/clothesDetail";
 
 export default function ClothesDetailScreen({ route, navigation }) {
   const { item } = route.params;
@@ -47,7 +48,7 @@ export default function ClothesDetailScreen({ route, navigation }) {
 
       setCurrentItem(editedItem);
       setEditModalVisible(false);
-      Alert.alert("Success", "Item updated successfully!");
+      Alert.alert("Success", "Item updated successfully");
     } catch (error) {
       console.error("Error updating item:", error);
       Alert.alert("Error", "Failed to update item");
@@ -80,53 +81,64 @@ export default function ClothesDetailScreen({ route, navigation }) {
 
   const renderEditModal = () => (
     <Modal visible={editModalVisible} animationType="slide">
-      <View style={styles.modalContainer}>
-        <View style={styles.modalHeader}>
-          <TouchableOpacity onPress={() => setEditModalVisible(false)}>
-            <MaterialIcons name="close" size={24} color="#666" />
+      <View style={sharedDetailStyles.modalContainer}>
+        <View style={sharedDetailStyles.modalHeader}>
+          <TouchableOpacity
+            onPress={() => setEditModalVisible(false)}
+            style={sharedDetailStyles.modalCloseButton}
+          >
+            <MaterialIcons name="close" size={24} color="#8B7355" />
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Edit Item</Text>
+          <Text style={sharedDetailStyles.modalTitle}>Edit Item</Text>
           <TouchableOpacity onPress={handleUpdate}>
-            <Text style={styles.saveButton}>Save</Text>
+            <Text style={sharedDetailStyles.saveButton}>Save</Text>
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.modalContent}>
+        <ScrollView style={sharedDetailStyles.modalContent}>
+          <Text style={sharedDetailStyles.inputLabel}>Item Name</Text>
           <TextInput
-            style={styles.editInput}
+            style={sharedDetailStyles.editInput}
             value={editedItem.name}
             onChangeText={(text) =>
               setEditedItem({ ...editedItem, name: text })
             }
-            placeholder="Item name"
+            placeholder="Enter item name"
+            placeholderTextColor="#A89888"
           />
 
+          <Text style={sharedDetailStyles.inputLabel}>Brand</Text>
           <TextInput
-            style={styles.editInput}
+            style={sharedDetailStyles.editInput}
             value={editedItem.brand || ""}
             onChangeText={(text) =>
               setEditedItem({ ...editedItem, brand: text })
             }
-            placeholder="Brand"
+            placeholder="Enter brand name"
+            placeholderTextColor="#A89888"
           />
 
+          <Text style={sharedDetailStyles.inputLabel}>Price</Text>
           <TextInput
-            style={styles.editInput}
+            style={sharedDetailStyles.editInput}
             value={editedItem.price?.toString() || ""}
             onChangeText={(text) =>
               setEditedItem({ ...editedItem, price: parseFloat(text) || null })
             }
-            placeholder="Price"
+            placeholder="Enter price"
+            placeholderTextColor="#A89888"
             keyboardType="numeric"
           />
 
+          <Text style={sharedDetailStyles.inputLabel}>Personal Notes</Text>
           <TextInput
-            style={[styles.editInput, styles.textArea]}
+            style={[sharedDetailStyles.editInput, sharedDetailStyles.textArea]}
             value={editedItem.notes || ""}
             onChangeText={(text) =>
               setEditedItem({ ...editedItem, notes: text })
             }
-            placeholder="Notes"
+            placeholder="Add personal notes"
+            placeholderTextColor="#A89888"
             multiline
             numberOfLines={3}
           />
@@ -135,21 +147,13 @@ export default function ClothesDetailScreen({ route, navigation }) {
     </Modal>
   );
 
-  const renderStatCard = (title, value, icon, color = "#007AFF") => (
-    <View style={styles.statCard}>
-      <MaterialIcons name={icon} size={24} color={color} />
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statTitle}>{title}</Text>
-    </View>
-  );
-
   const renderInfoRow = (label, value, icon) => {
     if (!value) return null;
     return (
-      <View style={styles.infoRow}>
-        <MaterialIcons name={icon} size={20} color="#666" />
-        <Text style={styles.infoLabel}>{label}:</Text>
-        <Text style={styles.infoValue}>{value}</Text>
+      <View style={sharedDetailStyles.infoRow}>
+        <MaterialIcons name={icon} size={20} color="#A89888" />
+        <Text style={sharedDetailStyles.infoLabel}>{label}:</Text>
+        <Text style={sharedDetailStyles.infoValue}>{value}</Text>
       </View>
     );
   };
@@ -157,13 +161,13 @@ export default function ClothesDetailScreen({ route, navigation }) {
   const averageRating =
     currentItem.wearCount > 0 && currentItem.totalRating > 0
       ? (currentItem.totalRating / currentItem.wearCount).toFixed(1)
-      : "No ratings yet";
+      : null;
 
   const costPerWear =
     currentItem.price && currentItem.wearCount > 0
       ? `€${(currentItem.price / currentItem.wearCount).toFixed(2)}`
       : currentItem.price
-        ? `€${currentItem.price} (unworn)`
+        ? `€${currentItem.price}`
         : "No price set";
 
   const lastWorn = currentItem.lastWorn
@@ -171,82 +175,119 @@ export default function ClothesDetailScreen({ route, navigation }) {
     : "Never worn";
 
   return (
-    <View style={styles.container}>
+    <View style={sharedDetailStyles.container}>
       <ScrollView
-        style={styles.scrollContainer}
+        style={sharedDetailStyles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with image */}
-        <View style={styles.header}>
+        {/* Floating Header Buttons */}
+        <View style={sharedDetailStyles.headerFloating}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={sharedDetailStyles.headerFloatingButton}
             onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
           >
-            <MaterialIcons name="arrow-back" size={24} color="#fff" />
+            <MaterialIcons name="arrow-back" size={24} color="#FAF8F5" />
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.editButton}
+            style={sharedDetailStyles.headerFloatingButton}
             onPress={() => setEditModalVisible(true)}
+            activeOpacity={0.7}
           >
-            <MaterialIcons name="edit" size={24} color="#fff" />
+            <MaterialIcons name="edit" size={24} color="#FAF8F5" />
           </TouchableOpacity>
         </View>
 
         {/* Main Image */}
-        <View style={styles.imageContainer}>
+        <View style={clothesDetailStyles.imageContainer}>
           {currentItem.image ? (
             <Image
               source={{ uri: currentItem.image }}
-              style={styles.mainImage}
+              style={clothesDetailStyles.mainImage}
             />
           ) : (
-            <View style={styles.imagePlaceholder}>
-              <MaterialIcons name="checkroom" size={80} color="#ccc" />
-              <Text style={styles.placeholderText}>No image</Text>
+            <View style={clothesDetailStyles.imagePlaceholder}>
+              <View style={sharedDetailStyles.emptyIconContainer}>
+                <Ionicons name="shirt-outline" size={48} color="#C9A07A" />
+              </View>
+              <Text style={sharedDetailStyles.emptyText}>No image</Text>
             </View>
           )}
         </View>
 
-        {/* Main Informations */}
-        <View style={styles.mainInfo}>
-          <View style={styles.titleRow}>
-            <Text style={styles.itemName}>{currentItem.name}</Text>
-            {averageRating !== "No ratings yet" && (
-              <View style={styles.ratingBadge}>
-                <AntDesign name="star" size={16} color="#FFD700" />
-                <Text style={styles.ratingText}>{averageRating}</Text>
+        {/* Main Info */}
+        <View style={sharedDetailStyles.mainInfo}>
+          <View style={sharedDetailStyles.titleRow}>
+            <Text style={sharedDetailStyles.itemName}>{currentItem.name}</Text>
+            {averageRating && (
+              <View style={sharedDetailStyles.ratingBadge}>
+                <AntDesign name="star" size={14} color="#D4AF37" />
+                <Text style={sharedDetailStyles.ratingText}>
+                  {averageRating}
+                </Text>
               </View>
             )}
           </View>
 
           {currentItem.brand && (
-            <Text style={styles.brandText}>{currentItem.brand}</Text>
+            <Text style={clothesDetailStyles.brandText}>
+              {currentItem.brand}
+            </Text>
           )}
 
-          <View style={styles.categoryContainer}>
-            <Text style={styles.categoryText}>{currentItem.category}</Text>
+          <View style={clothesDetailStyles.categoryBadge}>
+            <Text style={clothesDetailStyles.categoryText}>
+              {currentItem.category}
+            </Text>
           </View>
         </View>
 
         {/* Stats */}
-        <View style={styles.statsContainer}>
-          <Text style={styles.sectionTitle}>📊 Usage Statistics</Text>
-          <View style={styles.statsGrid}>
-            {renderStatCard(
-              "Times Worn",
-              currentItem.wearCount || 0,
-              "loop",
-              "#4caf50"
-            )}
-            {renderStatCard("Avg Rating", averageRating, "star", "#FFD700")}
-            {renderStatCard("Cost/Wear", costPerWear, "euro", "#007AFF")}
+        <View style={sharedDetailStyles.statsContainer}>
+          <View style={sharedDetailStyles.sectionHeader}>
+            <Ionicons name="bar-chart" size={20} color="#C9A07A" />
+            <Text style={sharedDetailStyles.sectionTitle}>
+              Usage Statistics
+            </Text>
+          </View>
+          <View style={sharedDetailStyles.statsGrid}>
+            <View style={sharedDetailStyles.statCard}>
+              <View style={sharedDetailStyles.statIconContainer}>
+                <MaterialIcons name="loop" size={24} color="#7CB342" />
+              </View>
+              <Text style={sharedDetailStyles.statValue}>
+                {currentItem.wearCount || 0}
+              </Text>
+              <Text style={sharedDetailStyles.statLabel}>Times Worn</Text>
+            </View>
+
+            <View style={sharedDetailStyles.statCard}>
+              <View style={sharedDetailStyles.statIconContainer}>
+                <AntDesign name="star" size={24} color="#D4AF37" />
+              </View>
+              <Text style={sharedDetailStyles.statValue}>
+                {averageRating || "N/A"}
+              </Text>
+              <Text style={sharedDetailStyles.statLabel}>Avg Rating</Text>
+            </View>
+
+            <View style={sharedDetailStyles.statCard}>
+              <View style={sharedDetailStyles.statIconContainer}>
+                <MaterialIcons name="euro" size={24} color="#C9A07A" />
+              </View>
+              <Text style={sharedDetailStyles.statValue}>{costPerWear}</Text>
+              <Text style={sharedDetailStyles.statLabel}>Cost/Wear</Text>
+            </View>
           </View>
         </View>
 
         {/* Details */}
-        <View style={styles.detailsContainer}>
-          <Text style={styles.sectionTitle}>🏷️ Item Details</Text>
+        <View style={sharedDetailStyles.detailsContainer}>
+          <View style={sharedDetailStyles.sectionHeader}>
+            <Ionicons name="pricetag" size={20} color="#C9A07A" />
+            <Text style={sharedDetailStyles.sectionTitle}>Item Details</Text>
+          </View>
 
           {renderInfoRow("Size", currentItem.size, "straighten")}
           {renderInfoRow("Color", currentItem.color, "palette")}
@@ -259,38 +300,67 @@ export default function ClothesDetailScreen({ route, navigation }) {
           {renderInfoRow("Last Worn", lastWorn, "schedule")}
 
           {currentItem.seasons && currentItem.seasons.length > 0 && (
-            <View style={styles.infoRow}>
-              <MaterialIcons name="wb-sunny" size={20} color="#666" />
-              <Text style={styles.infoLabel}>Seasons:</Text>
-              <View style={styles.seasonsContainer}>
+            <View style={sharedDetailStyles.infoRow}>
+              <MaterialIcons name="wb-sunny" size={20} color="#A89888" />
+              <Text style={sharedDetailStyles.infoLabel}>Seasons:</Text>
+              <View style={sharedDetailStyles.chipsContainer}>
                 {currentItem.seasons.map((season, index) => (
-                  <Text key={index} style={styles.seasonChip}>
-                    {season.charAt(0).toUpperCase() + season.slice(1)}
-                  </Text>
+                  <View
+                    key={index}
+                    style={[
+                      sharedDetailStyles.chip,
+                      sharedDetailStyles.seasonChip,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        sharedDetailStyles.chipText,
+                        sharedDetailStyles.seasonChipText,
+                      ]}
+                    >
+                      {season.charAt(0).toUpperCase() + season.slice(1)}
+                    </Text>
+                  </View>
                 ))}
               </View>
             </View>
           )}
 
           {currentItem.occasions && currentItem.occasions.length > 0 && (
-            <View style={styles.infoRow}>
-              <MaterialIcons name="event" size={20} color="#666" />
-              <Text style={styles.infoLabel}>Occasions:</Text>
-              <View style={styles.occasionsContainer}>
+            <View style={sharedDetailStyles.infoRow}>
+              <MaterialIcons name="event" size={20} color="#A89888" />
+              <Text style={sharedDetailStyles.infoLabel}>Occasions:</Text>
+              <View style={sharedDetailStyles.chipsContainer}>
                 {currentItem.occasions.map((occasion, index) => (
-                  <Text key={index} style={styles.occasionChip}>
-                    {occasion}
-                  </Text>
+                  <View
+                    key={index}
+                    style={[
+                      sharedDetailStyles.chip,
+                      sharedDetailStyles.occasionChip,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        sharedDetailStyles.chipText,
+                        sharedDetailStyles.occasionChipText,
+                      ]}
+                    >
+                      {occasion}
+                    </Text>
+                  </View>
                 ))}
               </View>
             </View>
           )}
         </View>
 
-        {/* Purchase informations */}
+        {/* Purchase Info */}
         {(currentItem.purchaseDate || currentItem.purchaseLocation) && (
-          <View style={styles.purchaseContainer}>
-            <Text style={styles.sectionTitle}>🛍️ Purchase Info</Text>
+          <View style={sharedDetailStyles.detailsContainer}>
+            <View style={sharedDetailStyles.sectionHeader}>
+              <Ionicons name="bag-handle" size={20} color="#C9A07A" />
+              <Text style={sharedDetailStyles.sectionTitle}>Purchase Info</Text>
+            </View>
             {renderInfoRow(
               "Purchase Date",
               currentItem.purchaseDate,
@@ -304,342 +374,85 @@ export default function ClothesDetailScreen({ route, navigation }) {
           </View>
         )}
 
-        {/* Care instructions */}
+        {/* Care Instructions */}
         {currentItem.careInstructions && (
-          <View style={styles.careContainer}>
-            <Text style={styles.sectionTitle}>🧼 Care Instructions</Text>
-            <Text style={styles.careText}>{currentItem.careInstructions}</Text>
+          <View style={sharedDetailStyles.textContentContainer}>
+            <View style={sharedDetailStyles.sectionHeader}>
+              <Ionicons name="water" size={20} color="#C9A07A" />
+              <Text style={sharedDetailStyles.sectionTitle}>
+                Care Instructions
+              </Text>
+            </View>
+            <View style={sharedDetailStyles.textContentCard}>
+              <Text style={sharedDetailStyles.textContent}>
+                {currentItem.careInstructions}
+              </Text>
+            </View>
           </View>
         )}
 
-        {/* Personal notes */}
+        {/* Personal Notes */}
         {currentItem.notes && (
-          <View style={styles.notesContainer}>
-            <Text style={styles.sectionTitle}>📝 Personal Notes</Text>
-            <Text style={styles.notesText}>{currentItem.notes}</Text>
+          <View style={sharedDetailStyles.textContentContainer}>
+            <View style={sharedDetailStyles.sectionHeader}>
+              <Ionicons name="document-text" size={20} color="#C9A07A" />
+              <Text style={sharedDetailStyles.sectionTitle}>
+                Personal Notes
+              </Text>
+            </View>
+            <View style={sharedDetailStyles.textContentCard}>
+              <Text
+                style={[
+                  sharedDetailStyles.textContent,
+                  sharedDetailStyles.textContentItalic,
+                ]}
+              >
+                {currentItem.notes}
+              </Text>
+            </View>
           </View>
         )}
 
         {/* Actions */}
-        <View style={styles.actionsContainer}>
+        <View style={sharedDetailStyles.actionsContainer}>
           <TouchableOpacity
-            style={styles.actionButton}
+            style={sharedDetailStyles.primaryAction}
             onPress={() => {
-              // Navigation vers l'écran de création d'outfit avec cet item pré-sélectionné
               navigation.navigate("OutfitCreator", {
                 preselectedItem: currentItem,
               });
             }}
+            activeOpacity={0.8}
           >
-            <MaterialIcons name="style" size={20} color="#007AFF" />
-            <Text style={styles.actionButtonText}>Create Outfit</Text>
+            <MaterialIcons name="style" size={20} color="#FAF8F5" />
+            <Text style={sharedDetailStyles.primaryActionText}>
+              Create Outfit
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
+            style={[
+              sharedDetailStyles.secondaryAction,
+              sharedDetailStyles.deleteAction,
+            ]}
             onPress={handleDelete}
+            activeOpacity={0.8}
           >
-            <MaterialIcons name="delete" size={20} color="#ff3b30" />
-            <Text style={[styles.actionButtonText, styles.deleteButtonText]}>
+            <MaterialIcons name="delete" size={20} color="#D97757" />
+            <Text
+              style={[
+                sharedDetailStyles.secondaryActionText,
+                sharedDetailStyles.deleteActionText,
+              ]}
+            >
               Delete Item
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* Bottom spacing */}
-        <View style={styles.bottomSpacing} />
       </ScrollView>
 
       {/* Modal */}
       {renderEditModal()}
-
-      {/* BottomBar */}
-      <BottomBar navigation={navigation} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  header: {
-    position: "absolute",
-    top: 50,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    zIndex: 10,
-  },
-  backButton: {
-    backgroundColor: "rgba(0,0,0,0.5)",
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  editButton: {
-    backgroundColor: "rgba(0,0,0,0.5)",
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  imageContainer: {
-    height: 300,
-    backgroundColor: "#f8f9fa",
-  },
-  mainImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  imagePlaceholder: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderText: {
-    marginTop: 8,
-    color: "#999",
-    fontSize: 16,
-  },
-  mainInfo: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  titleRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  itemName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    flex: 1,
-  },
-  ratingBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff3cd",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  ratingText: {
-    marginLeft: 4,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#856404",
-  },
-  brandText: {
-    fontSize: 18,
-    color: "#007AFF",
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  categoryContainer: {
-    alignSelf: "flex-start",
-  },
-  categoryText: {
-    backgroundColor: "#e3f2fd",
-    color: "#1976d2",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  statsContainer: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 16,
-    color: "#333",
-  },
-  statsGrid: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  statCard: {
-    alignItems: "center",
-    backgroundColor: "#f8f9fa",
-    padding: 16,
-    borderRadius: 12,
-    minWidth: 80,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginTop: 8,
-  },
-  statTitle: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 4,
-    textAlign: "center",
-  },
-  detailsContainer: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  infoLabel: {
-    fontSize: 16,
-    color: "#666",
-    marginLeft: 12,
-    minWidth: 100,
-  },
-  infoValue: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "500",
-    flex: 1,
-  },
-  seasonsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    flex: 1,
-  },
-  seasonChip: {
-    backgroundColor: "#e8f5e8",
-    color: "#2e7d32",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    fontSize: 12,
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  occasionsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    flex: 1,
-  },
-  occasionChip: {
-    backgroundColor: "#fff3e0",
-    color: "#ef6c00",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    fontSize: 12,
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  purchaseContainer: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  careContainer: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  careText: {
-    fontSize: 16,
-    color: "#333",
-    lineHeight: 24,
-  },
-  notesContainer: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  notesText: {
-    fontSize: 16,
-    color: "#333",
-    lineHeight: 24,
-    fontStyle: "italic",
-  },
-  actionsContainer: {
-    padding: 20,
-    gap: 12,
-  },
-  actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f8f9fa",
-    borderWidth: 1,
-    borderColor: "#007AFF",
-    borderRadius: 8,
-    padding: 16,
-  },
-  actionButtonText: {
-    color: "#007AFF",
-    fontWeight: "600",
-    fontSize: 16,
-    marginLeft: 8,
-  },
-  deleteButton: {
-    borderColor: "#ff3b30",
-  },
-  deleteButtonText: {
-    color: "#ff3b30",
-  },
-  bottomSpacing: {
-    height: 100,
-  },
-
-  // Modal styles
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-    paddingTop: 60,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  saveButton: {
-    color: "#007AFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  modalContent: {
-    flex: 1,
-    padding: 20,
-  },
-  editInput: {
-    borderWidth: 1,
-    borderColor: "#e9ecef",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  textArea: {
-    height: 80,
-    textAlignVertical: "top",
-  },
-});

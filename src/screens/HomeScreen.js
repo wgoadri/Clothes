@@ -2,20 +2,20 @@ import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   FlatList,
   Image,
   RefreshControl,
-  StyleSheet,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { auth } from "../services/firebase";
 import { getWardrobeItems } from "../services/wardrobeService";
 import { getOutfits } from "../services/outfitService";
 import { getTodayOutfit } from "../services/usageService";
 import { getUsageMetrics } from "../services/statsService";
 import ScreenLayout from "../components/ScreenLayout";
+import { homeStyles } from "../styles/screens/home";
+import { globalStyles } from "../styles/globalStyles";
 
 export default function HomeScreen({ navigation }) {
   const [metrics, setMetrics] = useState(null);
@@ -80,25 +80,33 @@ export default function HomeScreen({ navigation }) {
     if (todayOutfit) {
       return (
         <TouchableOpacity
-          style={styles.todayWidget}
+          style={homeStyles.todayWidget}
           onPress={() => navigation.navigate("DailyOutfitLogger")}
+          activeOpacity={0.8}
         >
-          <View style={styles.todayHeader}>
-            <Text style={styles.todayTitle}>📅 Today's Outfit</Text>
-            <MaterialIcons name="edit" size={20} color="#007AFF" />
+          <View style={homeStyles.todayHeader}>
+            <View style={homeStyles.todayTitleContainer}>
+              <Ionicons name="calendar" size={20} color="#C9A07A" />
+              <Text style={homeStyles.todayTitle}>Today's Outfit</Text>
+            </View>
+            <View style={homeStyles.editIconContainer}>
+              <MaterialIcons name="edit" size={18} color="#8B7355" />
+            </View>
           </View>
-          <Text style={styles.todayOutfitName}>{todayOutfit.outfit.name}</Text>
+          <Text style={homeStyles.todayOutfitName}>
+            {todayOutfit.outfit.name}
+          </Text>
           {todayOutfit.rating > 0 && (
-            <View style={styles.todayRating}>
+            <View style={homeStyles.todayRating}>
               {[...Array(5)].map((_, i) => (
-                <Text key={i} style={styles.star}>
+                <Text key={i} style={homeStyles.star}>
                   {i < todayOutfit.rating ? "⭐" : "☆"}
                 </Text>
               ))}
             </View>
           )}
           {todayOutfit.notes && (
-            <Text style={styles.todayNotes} numberOfLines={2}>
+            <Text style={homeStyles.todayNotes} numberOfLines={2}>
               "{todayOutfit.notes}"
             </Text>
           )}
@@ -108,17 +116,30 @@ export default function HomeScreen({ navigation }) {
 
     return (
       <TouchableOpacity
-        style={styles.todayWidgetEmpty}
+        style={homeStyles.todayWidgetEmpty}
         onPress={() => navigation.navigate("DailyOutfitLogger")}
+        activeOpacity={0.8}
       >
-        <MaterialIcons name="checkroom" size={32} color="#007AFF" />
-        <Text style={styles.todayEmptyTitle}>What are you wearing today?</Text>
-        <Text style={styles.todayEmptySubtitle}>Tap to log your outfit</Text>
+        <View style={homeStyles.emptyIconContainer}>
+          <MaterialIcons name="checkroom" size={32} color="#C9A07A" />
+        </View>
+        <Text style={homeStyles.todayEmptyTitle}>
+          What are you wearing today?
+        </Text>
+        <Text style={homeStyles.todayEmptySubtitle}>
+          Tap to log your outfit
+        </Text>
       </TouchableOpacity>
     );
   };
 
-  if (!metrics) return <Text style={styles.loading}>Loading metrics...</Text>;
+  if (!metrics) {
+    return (
+      <View style={globalStyles.centered}>
+        <Text style={globalStyles.bodyText}>Loading metrics...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScreenLayout
@@ -128,15 +149,13 @@ export default function HomeScreen({ navigation }) {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      {/* Remove ScrollView - just put content directly */}
-
       {/* Header Summary */}
-      <View style={styles.headerSummary}>
-        <Text style={styles.headerTitle}>👋 Welcome back!</Text>
-        <Text style={styles.headerSubtitle}>
+      <View style={homeStyles.headerSummary}>
+        <Text style={homeStyles.headerTitle}>Welcome back</Text>
+        <Text style={homeStyles.headerSubtitle}>
           {todayOutfit
             ? `You've logged today's outfit: ${todayOutfit.outfit.name}`
-            : "You haven't logged your outfit yet today."}
+            : "You haven't logged your outfit yet today"}
         </Text>
       </View>
 
@@ -144,40 +163,48 @@ export default function HomeScreen({ navigation }) {
       <TodayOutfitWidget />
 
       {/* Quick Stats */}
-      <View style={styles.quickStats}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{wardrobe.length}</Text>
-          <Text style={styles.statLabel}>Items</Text>
+      <View style={homeStyles.quickStats}>
+        <View style={homeStyles.statCard}>
+          <Text style={homeStyles.statNumber}>{wardrobe.length}</Text>
+          <Text style={homeStyles.statLabel}>Items</Text>
         </View>
 
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{outfits.length}</Text>
-          <Text style={styles.statLabel}>Outfits</Text>
+        <View style={homeStyles.statCard}>
+          <Text style={homeStyles.statNumber}>{outfits.length}</Text>
+          <Text style={homeStyles.statLabel}>Outfits</Text>
         </View>
 
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{metrics.totalDays || 0}</Text>
-          <Text style={styles.statLabel}>Days Logged</Text>
+        <View style={homeStyles.statCard}>
+          <Text style={homeStyles.statNumber}>{metrics.totalDays || 0}</Text>
+          <Text style={homeStyles.statLabel}>Days Logged</Text>
         </View>
       </View>
 
-      <Text style={styles.lastLogText}>
+      <Text style={homeStyles.lastLogText}>
         Last logged on {metrics.lastLogDate}
       </Text>
 
       {/* Highlights */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🌟 Highlights</Text>
-        <View style={styles.highlightCards}>
-          <View style={styles.highlightCard}>
-            <Text style={styles.highlightLabel}>Most worn item</Text>
-            <Text style={styles.highlightValue}>
+      <View style={globalStyles.section}>
+        <View style={homeStyles.sectionHeader}>
+          <Ionicons name="star" size={20} color="#C9A07A" />
+          <Text style={homeStyles.sectionTitle}>Highlights</Text>
+        </View>
+        <View style={homeStyles.highlightCards}>
+          <View style={homeStyles.highlightCard}>
+            <Text style={homeStyles.highlightLabel}>Most worn item</Text>
+            <Text style={homeStyles.highlightValue}>
               {metrics.topItems?.[0]?.name || "No data"}
             </Text>
+            {metrics.topItems?.[0]?.count > 0 && (
+              <Text style={homeStyles.highlightCount}>
+                {metrics.topItems[0].count} times
+              </Text>
+            )}
           </View>
-          <View style={styles.highlightCard}>
-            <Text style={styles.highlightLabel}>Favorite outfit</Text>
-            <Text style={styles.highlightValue}>
+          <View style={homeStyles.highlightCard}>
+            <Text style={homeStyles.highlightLabel}>Favorite outfit</Text>
+            <Text style={homeStyles.highlightValue}>
               {outfits.find((o) => o.favorite)?.name || "None yet"}
             </Text>
           </View>
@@ -185,165 +212,94 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       {/* Wardrobe Preview */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>👕 Wardrobe Preview</Text>
+      <View style={globalStyles.section}>
+        <View style={homeStyles.sectionHeader}>
+          <Ionicons name="shirt" size={20} color="#C9A07A" />
+          <Text style={homeStyles.sectionTitle}>Wardrobe Preview</Text>
+        </View>
         <FlatList
           horizontal
           data={wardrobe.slice(0, 10)}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.previewCard}>
+            <TouchableOpacity
+              style={homeStyles.previewCard}
+              onPress={() => navigation.navigate("Wardrobe")}
+              activeOpacity={0.8}
+            >
               {item.image ? (
                 <Image
                   source={{ uri: item.image }}
-                  style={styles.previewImage}
+                  style={homeStyles.previewImage}
                 />
               ) : (
-                <View style={styles.previewPlaceholder}>
-                  <Text style={styles.previewText}>{item.name}</Text>
+                <View style={homeStyles.previewPlaceholder}>
+                  <Ionicons name="shirt-outline" size={28} color="#C9A07A" />
+                  <Text style={homeStyles.previewText} numberOfLines={2}>
+                    {item.name}
+                  </Text>
                 </View>
               )}
-            </View>
+            </TouchableOpacity>
           )}
           showsHorizontalScrollIndicator={false}
+          contentContainerStyle={homeStyles.previewList}
         />
       </View>
 
       {/* Usage Insights */}
-      <Text style={styles.sectionTitle}>📊 Usage Insights</Text>
+      <View style={globalStyles.section}>
+        <View style={homeStyles.sectionHeader}>
+          <Ionicons name="bar-chart" size={20} color="#C9A07A" />
+          <Text style={homeStyles.sectionTitle}>Usage Insights</Text>
+        </View>
 
-      <Text style={styles.subsectionTitle}>Most Worn Outfits</Text>
-      {metrics.topOutfits.length === 0 ? (
-        <Text style={styles.empty}>No outfit logs yet.</Text>
-      ) : (
-        metrics.topOutfits.slice(0, 5).map((o, idx) => (
-          <View key={idx} style={styles.itemRow}>
-            <Text style={styles.itemName}>{o.name}</Text>
-            <Text style={styles.itemCount}>{o.count} times</Text>
-          </View>
-        ))
-      )}
+        <View style={homeStyles.insightSection}>
+          <Text style={homeStyles.subsectionTitle}>Most Worn Outfits</Text>
+          {metrics.topOutfits.length === 0 ? (
+            <View style={homeStyles.emptyState}>
+              <Text style={homeStyles.emptyText}>No outfit logs yet</Text>
+            </View>
+          ) : (
+            <View style={homeStyles.insightCard}>
+              {metrics.topOutfits.slice(0, 5).map((o, idx) => (
+                <View key={idx} style={homeStyles.itemRow}>
+                  <View style={homeStyles.itemRank}>
+                    <Text style={homeStyles.rankNumber}>{idx + 1}</Text>
+                  </View>
+                  <Text style={homeStyles.itemName}>{o.name}</Text>
+                  <View style={homeStyles.countBadge}>
+                    <Text style={homeStyles.itemCount}>{o.count}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
 
-      <Text style={styles.subsectionTitle}>Most Worn Clothes</Text>
-      {metrics.topItems.length === 0 ? (
-        <Text style={styles.empty}>No wardrobe usage yet.</Text>
-      ) : (
-        metrics.topItems.slice(0, 5).map((i, idx) => (
-          <View key={idx} style={styles.itemRow}>
-            <Text style={styles.itemName}>{i.name}</Text>
-            <Text style={styles.itemCount}>{i.count} times</Text>
-          </View>
-        ))
-      )}
+        <View style={homeStyles.insightSection}>
+          <Text style={homeStyles.subsectionTitle}>Most Worn Items</Text>
+          {metrics.topItems.length === 0 ? (
+            <View style={homeStyles.emptyState}>
+              <Text style={homeStyles.emptyText}>No wardrobe usage yet</Text>
+            </View>
+          ) : (
+            <View style={homeStyles.insightCard}>
+              {metrics.topItems.slice(0, 5).map((i, idx) => (
+                <View key={idx} style={homeStyles.itemRow}>
+                  <View style={homeStyles.itemRank}>
+                    <Text style={homeStyles.rankNumber}>{idx + 1}</Text>
+                  </View>
+                  <Text style={homeStyles.itemName}>{i.name}</Text>
+                  <View style={homeStyles.countBadge}>
+                    <Text style={homeStyles.itemCount}>{i.count}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      </View>
     </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  loading: { textAlign: "center", marginTop: 50 },
-  headerSummary: { marginBottom: 16 },
-  headerTitle: { fontSize: 20, fontWeight: "700", marginBottom: 4 },
-  headerSubtitle: { fontSize: 14, color: "#555" },
-  todayWidget: {
-    backgroundColor: "#E8F0FE",
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 20,
-  },
-  todayWidgetEmpty: {
-    backgroundColor: "#F1F3F6",
-    padding: 20,
-    alignItems: "center",
-    borderRadius: 16,
-    marginBottom: 20,
-  },
-  todayHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  todayTitle: { fontWeight: "600", fontSize: 16 },
-  todayOutfitName: { fontSize: 18, fontWeight: "700", marginBottom: 4 },
-  todayRating: { flexDirection: "row", marginBottom: 4 },
-  star: { fontSize: 18 },
-  todayNotes: { fontStyle: "italic", color: "#444" },
-  todayEmptyTitle: { fontSize: 16, fontWeight: "600", marginTop: 8 },
-  todayEmptySubtitle: { fontSize: 13, color: "#666" },
-  quickStats: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  statCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  statNumber: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#007AFF",
-  },
-  statLabel: {
-    fontSize: 13,
-    color: "#555",
-  },
-  lastLogText: {
-    textAlign: "center",
-    color: "#777",
-    fontSize: 13,
-    marginBottom: 10,
-  },
-  section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: "700", marginBottom: 8 },
-  subsectionTitle: { fontSize: 15, fontWeight: "600", marginTop: 12 },
-  itemRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 4,
-    borderBottomWidth: 0.5,
-    borderColor: "#ddd",
-  },
-  itemName: { fontSize: 14 },
-  itemCount: { fontSize: 14, color: "#333" },
-  empty: { color: "#888", fontStyle: "italic" },
-  quickActions: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 40,
-  },
-  highlightCards: { flexDirection: "row", gap: 12 },
-  highlightCard: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  highlightLabel: { fontSize: 13, color: "#666" },
-  highlightValue: { fontSize: 16, fontWeight: "700", color: "#007AFF" },
-  previewCard: {
-    width: 100,
-    height: 100,
-    borderRadius: 16,
-    marginRight: 10,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  previewImage: { width: "100%", height: "100%" },
-  previewPlaceholder: { padding: 8 },
-  previewText: { fontSize: 12, textAlign: "center", color: "#333" },
-});

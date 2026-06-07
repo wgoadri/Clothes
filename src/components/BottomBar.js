@@ -1,22 +1,11 @@
 import React, { useState } from "react";
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Text,
-  Modal,
-  Dimensions,
-  Platform,
-} from "react-native";
+import { View, TouchableOpacity, Text, Modal } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { modalStyles } from "../styles/components/modals";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const { width } = Dimensions.get("window");
+import { bottomBarStyles } from "../styles/components/bottomBar";
 
 export default function BottomBar({ navigation }) {
-  const insets = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleAddPress = () => setModalVisible(true);
@@ -28,39 +17,39 @@ export default function BottomBar({ navigation }) {
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={bottomBarStyles.container}>
         {/* Subtle gradient background */}
         <LinearGradient
           colors={["rgba(255, 255, 255, 0)", "rgba(245, 237, 230, 0.2)"]}
-          style={styles.gradientBackground}
+          style={bottomBarStyles.gradientBackground}
         />
 
         {/* Home */}
         <TouchableOpacity
-          style={styles.tabButton}
+          style={bottomBarStyles.tabButton}
           onPress={() => navigation.navigate("Home")}
         >
-          <View style={styles.iconContainer}>
+          <View style={bottomBarStyles.iconContainer}>
             <Ionicons name="home-outline" size={24} color="#8B7355" />
           </View>
-          <Text style={styles.tabLabel}>Home</Text>
+          <Text style={bottomBarStyles.tabLabel}>Home</Text>
         </TouchableOpacity>
 
         {/* Wardrobe */}
         <TouchableOpacity
-          style={styles.tabButton}
+          style={bottomBarStyles.tabButton}
           onPress={() => navigation.navigate("Wardrobe")}
         >
-          <View style={styles.iconContainer}>
+          <View style={bottomBarStyles.iconContainer}>
             <Ionicons name="shirt-outline" size={24} color="#8B7355" />
           </View>
-          <Text style={styles.tabLabel}>Wardrobe</Text>
+          <Text style={bottomBarStyles.tabLabel}>Wardrobe</Text>
         </TouchableOpacity>
 
-        {/* Center circular Add button - Luxury version */}
-        <View style={styles.centerButtonWrapper}>
+        {/* Center circular Add button */}
+        <View style={bottomBarStyles.centerButtonWrapper}>
           <TouchableOpacity
-            style={styles.centerButton}
+            style={bottomBarStyles.centerButton}
             onPress={handleAddPress}
             activeOpacity={0.85}
           >
@@ -68,7 +57,7 @@ export default function BottomBar({ navigation }) {
               colors={["#D4A88C", "#C89B7F", "#B88A6F"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.centerGradient}
+              style={bottomBarStyles.centerGradient}
             >
               <Ionicons name="add" size={32} color="#FAF8F5" />
             </LinearGradient>
@@ -77,28 +66,28 @@ export default function BottomBar({ navigation }) {
 
         {/* Outfits */}
         <TouchableOpacity
-          style={styles.tabButton}
+          style={bottomBarStyles.tabButton}
           onPress={() => navigation.navigate("Outfits")}
         >
-          <View style={styles.iconContainer}>
+          <View style={bottomBarStyles.iconContainer}>
             <Ionicons name="star-outline" size={24} color="#8B7355" />
           </View>
-          <Text style={styles.tabLabel}>Outfits</Text>
+          <Text style={bottomBarStyles.tabLabel}>Outfits</Text>
         </TouchableOpacity>
 
         {/* Track usage */}
         <TouchableOpacity
-          style={styles.tabButton}
+          style={bottomBarStyles.tabButton}
           onPress={() => navigation.navigate("TrackUsage")}
         >
-          <View style={styles.iconContainer}>
+          <View style={bottomBarStyles.iconContainer}>
             <Ionicons name="calendar-outline" size={24} color="#8B7355" />
           </View>
-          <Text style={styles.tabLabel}>Track</Text>
+          <Text style={bottomBarStyles.tabLabel}>Track</Text>
         </TouchableOpacity>
       </View>
 
-      {/* LUXURY MODAL */}
+      {/* MODAL */}
       <Modal
         visible={modalVisible}
         transparent
@@ -113,7 +102,6 @@ export default function BottomBar({ navigation }) {
           />
 
           <View style={modalStyles.modalContent}>
-            {/* Decorative element */}
             <View style={modalStyles.modalDecoration} />
 
             <Text style={modalStyles.modalTitle}>Create Something New</Text>
@@ -218,79 +206,3 @@ export default function BottomBar({ navigation }) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 0,
-    width: width,
-    height: 85,
-    backgroundColor: "#FAF8F5",
-    borderTopWidth: 1,
-    borderTopColor: "#F0EBE3",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingBottom: Platform.OS === "ios" ? 10 : 8,
-    shadowColor: "#8B7355",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  gradientBackground: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "100%",
-  },
-  tabButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
-    flex: 1,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#F5EDE5",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  tabLabel: {
-    fontSize: 11,
-    color: "#8B7355",
-    fontWeight: "400",
-    letterSpacing: 0.3,
-    marginTop: 2,
-  },
-  centerButtonWrapper: {
-    position: "absolute",
-    top: -30,
-    alignSelf: "center",
-    zIndex: 2,
-  },
-  centerButton: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    shadowColor: "#8B7355",
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  centerGradient: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 3,
-    borderColor: "#FAF8F5",
-  },
-});

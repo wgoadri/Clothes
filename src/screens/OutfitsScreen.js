@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Alert } from "react-native";
+import { FlatList, Alert } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
 import OutfitItemCard from "../components/OutfitItemCard";
 import ClothesStatsBar from "../components/ClothesStatsBar";
@@ -13,6 +13,7 @@ import {
   toggleOutfitFavorite,
 } from "../services/outfitService";
 import { logDailyOutfit } from "../services/usageService";
+import { flatListScreenStyles } from "../styles/screens/flatList";
 
 export default function OutfitsScreen({ navigation }) {
   const [outfits, setOutfits] = useState([]);
@@ -25,6 +26,7 @@ export default function OutfitsScreen({ navigation }) {
   useEffect(() => {
     fetchOutfits();
   }, []);
+
   useEffect(() => {
     filterOutfits();
   }, [outfits, searchQuery, filterType]);
@@ -45,7 +47,7 @@ export default function OutfitsScreen({ navigation }) {
   const filterOutfits = () => {
     let filtered = [...outfits];
 
-    // Filter
+    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(
         (outfit) =>
@@ -57,7 +59,7 @@ export default function OutfitsScreen({ navigation }) {
       );
     }
 
-    // Filter with type
+    // Type filter
     switch (filterType) {
       case "favorites":
         filtered = filtered.filter((outfit) => outfit.favorite);
@@ -117,7 +119,7 @@ export default function OutfitsScreen({ navigation }) {
     try {
       await logDailyOutfit(userId, { outfitId: outfit.id });
       Alert.alert(
-        "Outfit logged! 🎉",
+        "Outfit Logged",
         `"${outfit.name}" has been logged for today. You can add rating and photos later.`,
         [
           { text: "OK" },
@@ -128,7 +130,7 @@ export default function OutfitsScreen({ navigation }) {
         ]
       );
     } catch (error) {
-      Alert.alert("Error", "Failed to log outfit for today.");
+      Alert.alert("Error", "Failed to log outfit for today");
       console.error("Wear today error:", error);
     }
   };
@@ -154,7 +156,6 @@ export default function OutfitsScreen({ navigation }) {
     />
   );
 
-  // Combine headers for FlatList
   const renderHeader = () => (
     <>
       <ClothesStatsBar
@@ -175,7 +176,7 @@ export default function OutfitsScreen({ navigation }) {
         renderItem={renderItem}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmptyState}
-        contentContainerStyle={styles.listContainer}
+        contentContainerStyle={flatListScreenStyles.listContainer}
         showsVerticalScrollIndicator={false}
         refreshing={loading}
         onRefresh={fetchOutfits}
@@ -183,10 +184,3 @@ export default function OutfitsScreen({ navigation }) {
     </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  listContainer: {
-    flexGrow: 1,
-    padding: 20,
-  },
-});

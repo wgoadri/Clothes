@@ -8,6 +8,7 @@ import ClothesStatsBar from "../components/ClothesStatsBar";
 import SearchBar from "../components/SearchBar";
 import ClothesFilterBar from "../components/ClothesFilterBar";
 import EmptyState from "../components/EmptyState";
+import { flatListScreenStyles } from "../styles/screens/flatList";
 
 export default function WardrobeScreen({ navigation }) {
   const [clothes, setClothes] = useState([]);
@@ -96,7 +97,7 @@ export default function WardrobeScreen({ navigation }) {
             onPress={(item) => navigation.navigate("ClothesDetail", { item })}
           />
         )}
-        contentContainerStyle={styles.listContainer}
+        contentContainerStyle={flatListScreenStyles.listContainer}
         ListEmptyComponent={renderEmptyState}
         refreshing={loading}
         onRefresh={fetchWardrobe}
@@ -104,10 +105,3 @@ export default function WardrobeScreen({ navigation }) {
     </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  listContainer: {
-    flexGrow: 1,
-    padding: 20,
-  },
-});

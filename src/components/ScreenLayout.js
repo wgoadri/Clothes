@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     paddingTop: 16,
   },
 });
