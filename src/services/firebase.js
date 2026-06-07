@@ -27,4 +27,4 @@ export const auth = initializeAuth(app, {
 export const db = getFirestore(app);
 
 // Optional: Firebase Storage for image uploads
-// export const storage = getStorage(app);
+export const storage = getStorage(app);

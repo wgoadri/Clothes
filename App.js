@@ -1,8 +1,11 @@
 import React from "react";
 import AppNavigator from "./src/navigation/AppNavigator";
-import { LogBox } from "react-native";
+import { AuthProvider } from "./src/contexts/AuthContext";
 
 export default function App() {
-  LogBox.ignoreAllLogs(); // optional, hides warnings
-  return <AppNavigator />;
+  return (
+    <AuthProvider>
+      <AppNavigator />
+    </AuthProvider>
+  );
 }

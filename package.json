@@ -8,14 +8,12 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "eslint ."
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.0.0",
     "@react-native-async-storage/async-storage": "^1.24.0",
-    "@react-native-firebase/app": "^23.4.1",
-    "@react-native-firebase/auth": "^23.4.1",
-    "@react-native-firebase/firestore": "^23.4.1",
-    "@react-native-firebase/storage": "^23.4.1",
     "@react-navigation/native": "^7.1.19",
     "@react-navigation/native-stack": "^7.6.0",
     "expo": "~54.0.20",
@@ -31,7 +29,11 @@
   },
   "private": true,
   "devDependencies": {
+    "@eslint/js": "^9.39.0",
     "eslint": "^9.39.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^14.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2"
