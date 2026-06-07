@@ -1,0 +1,139 @@
+{
+  // ───────────────────────────────────────────────────────────────
+  //  Dev Container — Expo + Node.js + Claude Code
+  //  Security model: container is fully isolated from host FS.
+  //  Claude Code can commit, but NOT push (blocked in shell + hook).
+  // ───────────────────────────────────────────────────────────────
+  "name": "expo-app-devcontainer",
+
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+
+  // ── Official Anthropic Claude Code feature ─────────────────────
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+
+  // ── Named volumes (NO host path mounts = full isolation) ────────
+  //
+  //  We deliberately do NOT mount ~/.ssh, ~/.gitconfig, or any
+  //  host directory. Git identity is set inside the container.
+  //  Claude Code config persists across rebuilds via a named volume.
+  "mounts": [
+    // Persist Claude auth token + settings across rebuilds
+    "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
+    // Persist npm/node_modules cache across rebuilds (faster installs)
+    "source=npm-cache-${devcontainerId},target=/home/vscode/.npm,type=volume"
+    // Note: zsh history is now handled via HISTFILE in .zshrc pointing
+    // to /workspace/.zsh_history (inside the bind-mounted workspace).
+    // This avoids all volume ownership/permission issues entirely.
+  ],
+
+  // ── Security: drop dangerous capabilities selectively ───────────
+  //
+  //  --cap-drop=ALL breaks devcontainer feature installers and chown.
+  //  Instead we keep the minimum required and drop the dangerous ones.
+  "runArgs": [
+    "--cap-drop=NET_ADMIN",
+    "--cap-drop=NET_RAW",
+    "--cap-drop=SYS_PTRACE",
+    "--cap-drop=SYS_ADMIN",
+    "--security-opt=no-new-privileges:true"
+  ],
+
+  // ── Workspace ─────────────────────────────────────────────────
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  // ── Port forwarding (Expo / Metro) ────────────────────────────
+  "forwardPorts": [8081, 19000, 19001, 19002],
+  "portsAttributes": {
+    "8081":  { "label": "Metro bundler",   "onAutoForward": "notify" },
+    "19000": { "label": "Expo Go",         "onAutoForward": "notify" },
+    "19001": { "label": "Expo DevTools",   "onAutoForward": "notify" },
+    "19002": { "label": "Expo CLI",        "onAutoForward": "notify" }
+  },
+
+  // ── Non-root user (required by Claude Code) ───────────────────
+  "remoteUser": "vscode",
+  "containerUser": "vscode",
+
+  // ── Environment variables ─────────────────────────────────────
+  "containerEnv": {
+    "ANDROID_HOME": "/opt/android-sdk",
+    "SHELL": "/usr/bin/zsh",
+    // zsh history lives in the workspace (always writable by vscode user)
+    "HISTFILE": "/workspace/.zsh_history"
+  },
+
+  // ── Post-create: git identity + hooks + Claude settings ───────
+  "postCreateCommand": "bash /workspace/.devcontainer/scripts/post-create.sh",
+
+  // ── Post-start: nothing needed — history is in /workspace ─────
+  // (removed the broken cp from the volume)
+
+  // ── VS Code extensions & settings ────────────────────────────
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Claude Code (official)
+        "anthropic.claude-code",
+
+        // Expo / React Native
+        "expo.vscode-expo-tools",
+        "msjsdiag.vscode-react-native",
+
+        // TypeScript / JS
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
+
+        // Code quality
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "visualstudioexptteam.vscodeintellicode",
+
+        // General DX
+        "christian-kohler.path-intellisense",
+        "bradlc.vscode-tailwindcss",
+        "pkief.material-icon-theme",
+        "oderwat.indent-rainbow",
+        "gruntfuggly.todo-tree"
+      ],
+      "settings": {
+        // Terminal
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontFamily": "MesloLGM Nerd Font, monospace",
+        "terminal.integrated.fontSize": 13,
+
+        // Editor
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+        "editor.rulers": [100],
+        "editor.bracketPairColorization.enabled": true,
+
+        // Git
+        "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+
+        // TypeScript
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.suggest.autoImports": true,
+
+        // ESLint
+        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+        // Icon theme
+        "workbench.iconTheme": "material-icon-theme"
+      }
+    }
+  }
+}
