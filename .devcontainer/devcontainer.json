@@ -13,7 +13,9 @@
 
   // ── Official Anthropic Claude Code feature ─────────────────────
   "features": {
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
+    // SSH client feature — ensures ssh binary + known_hosts are set up
+    "ghcr.io/devcontainers/features/sshd:1": { "version": "latest" }
   },
 
   // ── Named volumes (NO host path mounts = full isolation) ────────
@@ -66,6 +68,14 @@
     "SHELL": "/usr/bin/zsh",
     // zsh history lives in the workspace (always writable by vscode user)
     "HISTFILE": "/workspace/.zsh_history"
+  },
+
+  // ── SSH Agent forwarding ──────────────────────────────────────
+  //  VS Code forwards the host SSH agent socket automatically.
+  //  We just need to point SSH_AUTH_SOCK at it inside the container.
+  //  The private key itself NEVER enters the container.
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
   },
 
   // ── Post-create: git identity + hooks + Claude settings ───────

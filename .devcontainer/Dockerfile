@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bat \
     fzf \
     sudo \
+    openssh-client \
     locales \
     && rm -rf /var/lib/apt/lists/*
 

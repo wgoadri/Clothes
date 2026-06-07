@@ -94,7 +94,24 @@ else
   echo "  ⚠️  No .git directory found — hooks will be installed on first 'git init'"
 fi
 
-# ── 3. Claude Code settings ───────────────────────────────────────
+# ── 3. SSH known_hosts (pre-trust GitHub & GitLab) ─────────────────
+#  Prevents git from hanging on "Are you sure you want to continue?"
+#  on first connection. We verify the fingerprints here against the
+#  official published fingerprints — this is safe.
+echo ""
+echo "──────────────────────────────────────────────────────"
+echo "  Setting up SSH known_hosts"
+echo "──────────────────────────────────────────────────────"
+mkdir -p /home/vscode/.ssh
+chmod 700 /home/vscode/.ssh
+# Add GitHub and GitLab official host keys
+ssh-keyscan -H github.com    >> /home/vscode/.ssh/known_hosts 2>/dev/null
+ssh-keyscan -H gitlab.com    >> /home/vscode/.ssh/known_hosts 2>/dev/null
+ssh-keyscan -H bitbucket.org >> /home/vscode/.ssh/known_hosts 2>/dev/null
+chmod 600 /home/vscode/.ssh/known_hosts
+echo "  ✅  known_hosts populated (GitHub, GitLab, Bitbucket)"
+
+# ── 4. Claude Code settings ───────────────────────────────────────
 echo ""
 echo "──────────────────────────────────────────────────────"
 echo "  Writing Claude Code settings"
@@ -147,7 +164,7 @@ cat > "$WORKSPACE/.claude/settings.json" << 'JSON'
 JSON
 echo "  ✅  Claude Code settings written to .claude/settings.json"
 
-# ── 4. npm install (bypassing the husky prepare script) ───────────
+# ── 5. npm install (bypassing the husky prepare script) ───────────
 #
 #  Husky's "prepare" script calls `husky install` which tries to
 #  copy a shim into .husky/_/h — this fails with EPERM when the
