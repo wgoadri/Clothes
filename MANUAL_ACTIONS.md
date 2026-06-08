@@ -90,11 +90,11 @@ npx eas build --platform android --profile development
 
 Run through this after all code changes are committed and the app boots:
 
-- [ ] Sign up with a new email → lands on Home screen (not Auth loop)
-- [ ] Add a wardrobe item with a photo → photo saved and appears in the list
-- [ ] Edit a wardrobe item → changes persist after navigating away
-- [ ] Delete a wardrobe item → item disappears from list
-- [ ] Create an outfit (select items → name it → save) → appears in Outfits screen
-- [ ] Log today's outfit → Home screen widget updates
-- [ ] Open TrackUsageScreen → real stats appear (not empty placeholder)
-- [ ] Sign out from Settings → returns to Auth screen
+- [x] Sign up with a new email → lands on Home screen (not Auth loop)
+- [x] Add a wardrobe item with a photo → photo saved and appears in the list
+- [x] Edit a wardrobe item → changes persist after navigating away
+- [x] Delete a wardrobe item → item disappears from list
+- [x] Create an outfit (select items → name it → save) → appears in Outfits screen
+- [x] Log today's outfit → Home screen widget updates
+- [x] Open TrackUsageScreen → real stats appear (not empty placeholder)
+- [x] Sign out from Settings → returns to Auth screen
