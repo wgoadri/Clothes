@@ -12,10 +12,8 @@ import {
   FlatList,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from 'expo-image-manipulator';
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { auth, storage } from '../services/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth } from '../services/firebase';
 import { addWardrobeItem } from '../services/wardrobeService';
 import {
   CLOTHES_CATEGORIES,
@@ -129,30 +127,8 @@ export default function AddClothesScreen({ navigation }) {
     return true;
   };
 
-  const uploadImage = async (uri) => {
-    const compressed = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize: { width: 800 } }],
-      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-    );
-    const response = await fetch(compressed.uri);
-    const blob = await response.blob();
-    const storageRef = ref(storage, `users/${auth.currentUser.uid}/wardrobe/${Date.now()}.jpg`);
-    await uploadBytes(storageRef, blob);
-    return getDownloadURL(storageRef);
-  };
-
   const handleAdd = async () => {
     if (!validateForm()) return;
-
-    let imageUrl = null;
-    if (image) {
-      try {
-        imageUrl = await uploadImage(image);
-      } catch (err) {
-        Alert.alert('Upload failed', 'Could not upload photo. The item will be saved without an image.');
-      }
-    }
 
     const userId = auth.currentUser.uid;
 
@@ -161,7 +137,7 @@ export default function AddClothesScreen({ navigation }) {
         // Basic fields
         name: name.trim(),
         category,
-        image: imageUrl,
+        image,
 
         // Extra fields
         brand: brand.trim(),

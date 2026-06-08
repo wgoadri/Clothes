@@ -8,7 +8,7 @@ These are the steps that cannot be automated by code changes. Work through these
 
 ### 1a. Firestore Security Rules
 
-The file `firestore.rules` will be committed to the repo by the agents. You still need to **deploy** it:
+The file `firestore.rules` is committed to the repo. You still need to **deploy** it:
 
 ```
 firebase deploy --only firestore:rules
@@ -27,7 +27,7 @@ The rules lock every user to their own `/users/{userId}/**` subtree. Without dep
 
 ### 1b. Firestore Composite Index
 
-`TrackUsageScreen` queries `dailyLogs` ordered by `timestamp` desc. Firestore requires a composite index for `orderBy` on a field that is not `__name__`. Create it in the Firebase Console:
+`TrackUsageScreen` queries `dailyLogs` ordered by `timestamp` desc. Firestore requires a composite index for this. Create it in the Firebase Console:
 
 - **Collection**: `users/{userId}/dailyLogs`
 - **Fields**: `timestamp` (Descending)
@@ -35,26 +35,20 @@ The rules lock every user to their own `/users/{userId}/**` subtree. Without dep
 
 Alternatively, run the app once — Firestore will print a direct link to create the missing index in the Expo logs.
 
-### 1c. Firebase Storage — CORS and rules
+### 1c. Firebase Storage — DEFERRED
 
-The Storage bucket is `closet-app-df6be.firebasestorage.app`. Verify that the default Storage Security Rules allow authenticated users to read/write their own folder:
+Photo upload to Firebase Storage is deferred until the Firebase Blaze (pay-as-you-go) plan is enabled.
+Currently, photos are stored as **local URIs** (works in dev/Expo Go, not production-safe).
 
-```
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /users/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
-
-Deploy with: `firebase deploy --only storage`
+When ready to enable Storage:
+1. Upgrade the Firebase project to Blaze at console.firebase.google.com
+2. Run `firebase deploy --only storage` to deploy `storage.rules`
+3. In `src/screens/AddClothesScreen.js`, re-add the `uploadImage` helper and Storage imports
+   (see git history on `feat/phase-1-core-features` for the full implementation)
 
 ### 1d. Enable Email/Password Auth provider
 
-In the Firebase Console → Authentication → Sign-in method, confirm that **Email/Password** is enabled. It was used in Phase 1 but may not have been explicitly enabled in the console.
+In the Firebase Console → Authentication → Sign-in method, confirm that **Email/Password** is enabled.
 
 ---
 
@@ -72,7 +66,7 @@ The Firebase config is currently hardcoded in `src/services/firebase.js`. Web Fi
    EXPO_PUBLIC_FIREBASE_APP_ID=1:297287821159:web:b272230285664fa2b3b1c2
    ```
 2. Update `src/services/firebase.js` to read from `process.env.EXPO_PUBLIC_*`.
-3. This is deferred from Phase 0 and is low-priority — skip if not needed now.
+3. Low-priority — skip if not needed now.
 
 ---
 
@@ -86,15 +80,9 @@ An `eas.json` is already in the repo. To build:
 npx eas build --platform android --profile development
 ```
 
-No additional console setup is required for development builds unless you need push notifications (Phase 3).
+### 3b. expo-image-manipulator — DEFERRED
 
-### 3b. expo-image-manipulator (image compression)
-
-The Phase 1 wardrobe upload adds image compression before uploading to Storage. The package `expo-image-manipulator` is already part of the Expo SDK — no separate install needed. If you get a "module not found" error, run:
-
-```
-npx expo install expo-image-manipulator
-```
+`expo-image-manipulator` is installed but not yet used — image compression is deferred until Firebase Storage is enabled (see 1c). No action needed now.
 
 ---
 
@@ -103,10 +91,10 @@ npx expo install expo-image-manipulator
 Run through this after all code changes are committed and the app boots:
 
 - [ ] Sign up with a new email → lands on Home screen (not Auth loop)
-- [ ] Add a wardrobe item with a photo → photo uploads and appears in the list
+- [ ] Add a wardrobe item with a photo → photo saved and appears in the list
 - [ ] Edit a wardrobe item → changes persist after navigating away
 - [ ] Delete a wardrobe item → item disappears from list
-- [ ] Create an outfit (upload photo → select items → name it → save) → appears in Outfits screen
+- [ ] Create an outfit (select items → name it → save) → appears in Outfits screen
 - [ ] Log today's outfit → Home screen widget updates
 - [ ] Open TrackUsageScreen → real stats appear (not empty placeholder)
 - [ ] Sign out from Settings → returns to Auth screen
