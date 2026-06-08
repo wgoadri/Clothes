@@ -13,10 +13,10 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { addDoc, collection, updateDoc, doc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, db, storage } from "../services/firebase";
+import { auth, storage } from "../services/firebase";
 import { getWardrobeItems } from "../services/wardrobeService";
+import { createOutfit, updateOutfit } from "../services/outfitService";
 
 // Components
 import OutfitProgressSteps from "../components/outfit-creator/OutfitProgressSteps";
@@ -169,16 +169,13 @@ export default function OutfitCreatorScreen({ route, navigation }) {
         wearCount: editOutfit?.wearCount || 0,
         lastWorn: editOutfit?.lastWorn || null,
         totalRating: editOutfit?.totalRating || 0,
-        createdAt: editOutfit?.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
 
       if (isEditing) {
-        const outfitRef = doc(db, "users", userId, "outfits", editOutfit.id);
-        await updateDoc(outfitRef, outfitData);
+        await updateOutfit(userId, editOutfit.id, outfitData);
         Alert.alert("Success! 🎉", "Outfit updated successfully!");
       } else {
-        await addDoc(collection(db, "users", userId, "outfits"), outfitData);
+        await createOutfit(userId, outfitData);
         Alert.alert("Success! 🎉", "Outfit created successfully!");
       }
 

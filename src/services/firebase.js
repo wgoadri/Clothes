@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from "firebase/storage"; // Optional, if you plan to use image uploads
 
 // Firebase config
@@ -24,7 +24,9 @@ export const auth = initializeAuth(app, {
 });
 
 // Firestore
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+});
 
 // Optional: Firebase Storage for image uploads
 export const storage = getStorage(app);

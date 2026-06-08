@@ -1,49 +1,61 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Alert,
   ScrollView,
   Image,
-  TextInput
-} from "react-native";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import { auth } from "../services/firebase";
-import { getOutfits } from "../services/outfitService";
-import { logDailyOutfit, getTodayOutfit } from "../services/usageService";
+  TextInput,
+  ActivityIndicator,
+} from 'react-native';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { auth } from '../services/firebase';
+import { getOutfits } from '../services/outfitService';
+import { logDailyOutfit, getTodayOutfit } from '../services/usageService';
+import ScreenLayout from '../components/ScreenLayout';
+import { dailyOutfitLoggerStyles as s } from '../styles/screens/dailyOutfitLogger';
+import theme from '../styles/theme';
 
 export default function DailyOutfitLoggerScreen({ navigation }) {
   const [selectedOutfit, setSelectedOutfit] = useState(null);
   const [outfits, setOutfits] = useState([]);
   const [rating, setRating] = useState(0);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState('');
   const [photos, setPhotos] = useState([]);
   const [todayLog, setTodayLog] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
+
   const userId = auth.currentUser?.uid;
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const fetchData = useCallback(async () => {
+    try {
+      setFetchError(null);
+      const [outfitsData, todayData] = await Promise.all([
+        getOutfits(userId),
+        getTodayOutfit(userId),
+      ]);
 
-  const fetchData = async () => {
-    const [outfitsData, todayData] = await Promise.all([
-      getOutfits(userId),
-      getTodayOutfit(userId),
-    ]);
+      setOutfits(outfitsData);
+      setTodayLog(todayData);
 
-    setOutfits(outfitsData);
-    setTodayLog(todayData);
-
-    if (todayData) {
-      setSelectedOutfit(todayData.outfit);
-      setRating(todayData.rating || 0);
-      setNotes(todayData.notes || "");
-      setPhotos(todayData.photos || []);
+      if (todayData) {
+        setSelectedOutfit(todayData.outfit);
+        setRating(todayData.rating || 0);
+        setNotes(todayData.notes || '');
+        setPhotos(todayData.photos || []);
+      }
+    } catch (error) {
+      setFetchError('Could not load your outfit data. Pull down to refresh.');
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    fetchData().finally(() => setLoading(false));
+  }, [fetchData]);
 
   const takePhoto = async () => {
     const result = await ImagePicker.launchCameraAsync({
@@ -59,7 +71,7 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
 
   const handleSave = async () => {
     if (!selectedOutfit) {
-      Alert.alert("Select an outfit", "Please choose an outfit first.");
+      Alert.alert('Select an outfit', 'Please choose an outfit first.');
       return;
     }
 
@@ -70,228 +82,163 @@ export default function DailyOutfitLoggerScreen({ navigation }) {
       photos,
     };
 
+    setSaving(true);
     try {
       await logDailyOutfit(userId, logData);
-      Alert.alert("Outfit logged! 🎉", "Your daily outfit has been saved.", [
-        { text: "OK", onPress: () => navigation.goBack() },
+      Alert.alert('Outfit logged! 🎉', 'Your daily outfit has been saved.', [
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
-      Alert.alert("Error", "Failed to save outfit log.");
+      Alert.alert('Error', 'Failed to save outfit log. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const renderStars = () => {
-    return (
-      <View style={styles.starsContainer}>
-        {[1, 2, 3, 4, 5].map((star) => (
-          <TouchableOpacity key={star} onPress={() => setRating(star)}>
-            <FontAwesome
-              name={star <= rating ? "star" : "star-o"}
-              size={30}
-              color={star <= rating ? "#FFD700" : "#ccc"}
-            />
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
-  };
+  const renderStars = () => (
+    <View style={s.starsContainer}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <TouchableOpacity key={star} onPress={() => setRating(star)} style={s.starButton}>
+          <FontAwesome
+            name={star <= rating ? 'star' : 'star-o'}
+            size={30}
+            color={star <= rating ? theme.colors.accent.gold : theme.colors.border.medium}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>
-        📅 Today's Outfit {todayLog ? "(Already logged)" : ""}
-      </Text>
+    <ScreenLayout navigation={navigation} title="Daily Log">
+      {loading ? (
+        <View style={s.centered}>
+          <ActivityIndicator size="large" color={theme.colors.primary.warmBrown} />
+        </View>
+      ) : (
+        <>
+          <Text style={s.pageTitle}>
+            📅 Today's Outfit
+          </Text>
+          {todayLog ? (
+            <Text style={s.pageTitleAlreadyLogged}>Already logged</Text>
+          ) : null}
 
-      {/* Outfit Selection */}
-      <Text style={styles.sectionTitle}>Choose your outfit:</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {outfits.map((outfit) => (
-          <TouchableOpacity
-            key={outfit.id}
-            style={[
-              styles.outfitCard,
-              selectedOutfit?.id === outfit.id && styles.selectedOutfit,
-              todayLog && styles.disabled, // disable selection
-            ]}
-            disabled={!!todayLog} // disable selection if already logged
-            onPress={() => setSelectedOutfit(outfit)}
+          {fetchError ? (
+            <Text style={s.inlineError}>{fetchError}</Text>
+          ) : null}
+
+          {/* Outfit Selection */}
+          <Text style={s.sectionLabel}>Choose your outfit</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={s.outfitListContent}
           >
-            <View style={styles.previewRow}>
-              {outfit.previewImages?.slice(0, 2).map((uri, index) => (
-                <Image
-                  key={index}
-                  source={{ uri }}
-                  style={styles.miniPreview}
-                />
-              ))}
-            </View>
-            <Text style={styles.outfitName}>{outfit.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Rating */}
-      <Text style={styles.sectionTitle}>How did it feel?</Text>
-      {todayLog ? (
-        <Text style={styles.readOnlyText}>Rating: {todayLog.rating || 0}</Text>
-      ) : (
-        renderStars()
-      )}
-
-      {/* Notes */}
-      <Text style={styles.sectionTitle}>Notes:</Text>
-      {todayLog ? (
-        <Text style={styles.readOnlyText}>{todayLog.notes || "-"}</Text>
-      ) : (
-        <TextInput
-          style={styles.notesInput}
-          placeholder="How was your day? Any compliments?"
-          value={notes}
-          onChangeText={setNotes}
-          multiline
-        />
-      )}
-
-      {/* Photos */}
-      <View style={styles.photoSection}>
-        <Text style={styles.sectionTitle}>Photos:</Text>
-        {todayLog ? (
-          <ScrollView horizontal>
-            {todayLog.photos?.map((uri, index) => (
-              <Image key={index} source={{ uri }} style={styles.photoPreview} />
+            {outfits.map((outfit) => (
+              <TouchableOpacity
+                key={outfit.id}
+                style={[
+                  s.outfitCard,
+                  selectedOutfit?.id === outfit.id && s.outfitCardSelected,
+                  todayLog && s.outfitCardDisabled,
+                ]}
+                disabled={!!todayLog}
+                onPress={() => setSelectedOutfit(outfit)}
+                activeOpacity={0.75}
+              >
+                <View style={s.previewRow}>
+                  {outfit.previewImages?.slice(0, 2).map((uri, index) => (
+                    <Image key={index} source={{ uri }} style={s.miniPreview} />
+                  ))}
+                </View>
+                <Text style={s.outfitName}>{outfit.name}</Text>
+              </TouchableOpacity>
             ))}
           </ScrollView>
-        ) : (
-          <>
-            <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
-              <MaterialIcons name="camera-alt" size={24} color="#007AFF" />
-              <Text style={styles.photoButtonText}>Take Photo</Text>
-            </TouchableOpacity>
 
-            <ScrollView horizontal>
-              {photos.map((uri, index) => (
-                <Image
-                  key={index}
-                  source={{ uri }}
-                  style={styles.photoPreview}
-                />
+          {/* Rating */}
+          <Text style={s.sectionLabel}>How did it feel?</Text>
+          {todayLog ? (
+            <Text style={s.readOnlyText}>Rating: {todayLog.rating || 0}</Text>
+          ) : (
+            renderStars()
+          )}
+
+          {/* Notes */}
+          <Text style={s.sectionLabel}>Notes</Text>
+          {todayLog ? (
+            <Text style={s.readOnlyText}>{todayLog.notes || '-'}</Text>
+          ) : (
+            <TextInput
+              style={s.notesInput}
+              placeholder="How was your day? Any compliments?"
+              placeholderTextColor={theme.colors.text.placeholder}
+              value={notes}
+              onChangeText={setNotes}
+              multiline
+            />
+          )}
+
+          {/* Photos */}
+          <Text style={s.sectionLabel}>Photos</Text>
+          {todayLog ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={s.photoListContent}
+            >
+              {todayLog.photos?.map((uri, index) => (
+                <Image key={index} source={{ uri }} style={s.photoPreview} />
               ))}
             </ScrollView>
-          </>
-        )}
-      </View>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={s.photoButton}
+                onPress={takePhoto}
+                activeOpacity={0.75}
+              >
+                <MaterialIcons
+                  name="camera-alt"
+                  size={22}
+                  color={theme.colors.primary.warmBrown}
+                />
+                <Text style={s.photoButtonText}>Take Photo</Text>
+              </TouchableOpacity>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={s.photoListContent}
+              >
+                {photos.map((uri, index) => (
+                  <Image key={index} source={{ uri }} style={s.photoPreview} />
+                ))}
+              </ScrollView>
+            </>
+          )}
 
-      {/* Save Button */}
-      {!todayLog && (
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Log Today's Outfit</Text>
-        </TouchableOpacity>
+          {/* Save Button */}
+          {!todayLog && (
+            <TouchableOpacity
+              style={[s.saveButton, saving && s.saveButtonDisabled]}
+              onPress={handleSave}
+              disabled={saving}
+              activeOpacity={0.8}
+            >
+              {saving ? (
+                <ActivityIndicator
+                  size="small"
+                  color={theme.colors.text.inverse}
+                />
+              ) : null}
+              <Text style={s.saveButtonText}>
+                {saving ? 'Saving…' : 'Log Today\'s Outfit'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </>
       )}
-    </ScrollView>
+    </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  readOnlyText: {
-    fontSize: 16,
-    color: "#333",
-    marginVertical: 8,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  outfitCard: {
-    backgroundColor: "#f8f8f8",
-    borderRadius: 12,
-    padding: 12,
-    marginRight: 12,
-    width: 120,
-    alignItems: "center",
-  },
-  selectedOutfit: {
-    backgroundColor: "#e3f2fd",
-    borderWidth: 2,
-    borderColor: "#007AFF",
-  },
-  previewRow: {
-    flexDirection: "row",
-    marginBottom: 8,
-  },
-  miniPreview: {
-    width: 40,
-    height: 40,
-    borderRadius: 6,
-    marginRight: 4,
-  },
-  outfitName: {
-    fontSize: 12,
-    textAlign: "center",
-    fontWeight: "500",
-  },
-  starsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  notesInput: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    height: 80,
-    textAlignVertical: "top",
-  },
-  photoSection: {
-    marginTop: 20,
-  },
-  photoButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f0f0f0",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  photoButtonText: {
-    marginLeft: 8,
-    color: "#007AFF",
-    fontWeight: "500",
-  },
-  photoPreview: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginRight: 8,
-  },
-  saveButton: {
-    backgroundColor: "#007AFF",
-    borderRadius: 12,
-    padding: 16,
-    alignItems: "center",
-    marginTop: 30,
-    marginBottom: 20,
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
