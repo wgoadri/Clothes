@@ -11,10 +11,12 @@ import {
   Modal,
   FlatList,
 } from "react-native";
-import { addDoc, collection } from "firebase/firestore";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from 'expo-image-manipulator';
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { auth, db } from "../services/firebase";
+import { auth, storage } from '../services/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { addWardrobeItem } from '../services/wardrobeService';
 import {
   CLOTHES_CATEGORIES,
   SEASONS,
@@ -127,8 +129,30 @@ export default function AddClothesScreen({ navigation }) {
     return true;
   };
 
+  const uploadImage = async (uri) => {
+    const compressed = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    const response = await fetch(compressed.uri);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `users/${auth.currentUser.uid}/wardrobe/${Date.now()}.jpg`);
+    await uploadBytes(storageRef, blob);
+    return getDownloadURL(storageRef);
+  };
+
   const handleAdd = async () => {
     if (!validateForm()) return;
+
+    let imageUrl = null;
+    if (image) {
+      try {
+        imageUrl = await uploadImage(image);
+      } catch (err) {
+        Alert.alert('Upload failed', 'Could not upload photo. The item will be saved without an image.');
+      }
+    }
 
     const userId = auth.currentUser.uid;
 
@@ -137,7 +161,7 @@ export default function AddClothesScreen({ navigation }) {
         // Basic fields
         name: name.trim(),
         category,
-        image,
+        image: imageUrl,
 
         // Extra fields
         brand: brand.trim(),
@@ -164,7 +188,7 @@ export default function AddClothesScreen({ navigation }) {
         tags: [],
       };
 
-      await addDoc(collection(db, "users", userId, "wardrobe"), itemData);
+      await addWardrobeItem(userId, itemData);
 
       // Reset form
       resetForm();
@@ -245,7 +269,6 @@ export default function AddClothesScreen({ navigation }) {
             )}
             style={styles.modalList}
           />
-          <Text style={{ height: 20 }}>Debug spacing</Text>
         </View>
       </View>
     </Modal>

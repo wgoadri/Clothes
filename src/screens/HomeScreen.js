@@ -94,7 +94,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           </View>
           <Text style={homeStyles.todayOutfitName}>
-            {todayOutfit.outfit.name}
+            {todayOutfit.outfit?.name ?? 'Unknown outfit'}
           </Text>
           {todayOutfit.rating > 0 && (
             <View style={homeStyles.todayRating}>
@@ -154,7 +154,7 @@ export default function HomeScreen({ navigation }) {
         <Text style={homeStyles.headerTitle}>Welcome back</Text>
         <Text style={homeStyles.headerSubtitle}>
           {todayOutfit
-            ? `You've logged today's outfit: ${todayOutfit.outfit.name}`
+            ? `You've logged today's outfit: ${todayOutfit.outfit?.name ?? 'Unknown outfit'}`
             : "You haven't logged your outfit yet today"}
         </Text>
       </View>
