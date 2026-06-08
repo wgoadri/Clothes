@@ -1,55 +1,22 @@
 {
-  // ───────────────────────────────────────────────────────────────
-  //  Dev Container — Expo + Node.js + Claude Code
-  //  Security model: container is fully isolated from host FS.
-  //  Claude Code can commit, but NOT push (blocked in shell + hook).
-  // ───────────────────────────────────────────────────────────────
-  "name": "expo-app-devcontainer",
+  "name": "expo-dev",
+  "build": { "dockerfile": "Dockerfile", "context": "." },
 
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "."
-  },
-
-  // ── Official Anthropic Claude Code feature ─────────────────────
+  // Installs Claude Code, owned by vscode so it can self-update.
   "features": {
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
-    // SSH client feature — ensures ssh binary + known_hosts are set up
-    "ghcr.io/devcontainers/features/sshd:1": { "version": "latest" }
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
   },
 
-  // ── Named volumes (NO host path mounts = full isolation) ────────
-  //
-  //  We deliberately do NOT mount ~/.ssh, ~/.gitconfig, or any
-  //  host directory. Git identity is set inside the container.
-  //  Claude Code config persists across rebuilds via a named volume.
-  "mounts": [
-    // Persist Claude auth token + settings across rebuilds
-    "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
-    // Persist npm/node_modules cache across rebuilds (faster installs)
-    "source=npm-cache-${devcontainerId},target=/home/vscode/.npm,type=volume"
-    // Note: zsh history is now handled via HISTFILE in .zshrc pointing
-    // to /workspace/.zsh_history (inside the bind-mounted workspace).
-    // This avoids all volume ownership/permission issues entirely.
-  ],
-
-  // ── Security: drop dangerous capabilities selectively ───────────
-  //
-  //  --cap-drop=ALL breaks devcontainer feature installers and chown.
-  //  Instead we keep the minimum required and drop the dangerous ones.
-  "runArgs": [
-    "--cap-drop=NET_ADMIN",
-    "--cap-drop=NET_RAW",
-    "--cap-drop=SYS_PTRACE",
-    "--cap-drop=SYS_ADMIN",
-    "--security-opt=no-new-privileges:true"
-  ],
-
-  // ── Workspace ─────────────────────────────────────────────────
+  // Only /workspace is shared with the host — that's the real isolation boundary.
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
 
-  // ── Port forwarding (Expo / Metro) ────────────────────────────
+  // Persist Claude auth/settings and shell history across rebuilds.
+  "mounts": [
+    "source=claude-${devcontainerId},target=/home/vscode/.claude,type=volume",
+    "source=history-${devcontainerId},target=/home/vscode/.history,type=volume"
+  ],
+
   "forwardPorts": [8081, 19000, 19001, 19002],
   "portsAttributes": {
     "8081":  { "label": "Metro bundler",   "onAutoForward": "notify" },
@@ -57,34 +24,19 @@
     "19001": { "label": "Expo DevTools",   "onAutoForward": "notify" },
     "19002": { "label": "Expo CLI",        "onAutoForward": "notify" }
   },
-
-  // ── Non-root user (required by Claude Code) ───────────────────
   "remoteUser": "vscode",
-  "containerUser": "vscode",
 
-  // ── Environment variables ─────────────────────────────────────
   "containerEnv": {
-    "ANDROID_HOME": "/opt/android-sdk",
     "SHELL": "/usr/bin/zsh",
-    // zsh history lives in the workspace (always writable by vscode user)
-    "HISTFILE": "/workspace/.zsh_history"
+    "HISTFILE": "/home/vscode/.history/.zsh_history"
   },
 
-  // ── SSH Agent forwarding ──────────────────────────────────────
-  //  VS Code forwards the host SSH agent socket automatically.
-  //  We just need to point SSH_AUTH_SOCK at it inside the container.
-  //  The private key itself NEVER enters the container.
-  "remoteEnv": {
-    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
-  },
+  // Forward the host SSH agent so git can authenticate (fetch/clone) WITHOUT
+  // copying any private key in. Pushing is still blocked (see post-create.sh).
+  "remoteEnv": { "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}" },
 
-  // ── Post-create: git identity + hooks + Claude settings ───────
-  "postCreateCommand": "bash /workspace/.devcontainer/scripts/post-create.sh",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
 
-  // ── Post-start: nothing needed — history is in /workspace ─────
-  // (removed the broken cp from the volume)
-
-  // ── VS Code extensions & settings ────────────────────────────
   "customizations": {
     "vscode": {
       "extensions": [
@@ -128,21 +80,13 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.tabSize": 2,
         "editor.rulers": [100],
-        "editor.bracketPairColorization.enabled": true,
 
         // Git
         "git.enableSmartCommit": true,
         "git.confirmSync": false,
 
-        // TypeScript
-        "typescript.preferences.importModuleSpecifier": "relative",
-        "typescript.suggest.autoImports": true,
-
         // ESLint
-        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-
-        // Icon theme
-        "workbench.iconTheme": "material-icon-theme"
+        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
       }
     }
   }
