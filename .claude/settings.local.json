@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(sudo chown -R 1000:1000 \"/home/vscode/.npm\")",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "Bash(git checkout *)"
     ]
   }
 }
