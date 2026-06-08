@@ -11,10 +11,10 @@ import {
   Modal,
   FlatList,
 } from "react-native";
-import { addDoc, collection } from "firebase/firestore";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { auth, db } from "../services/firebase";
+import { auth } from '../services/firebase';
+import { addWardrobeItem } from '../services/wardrobeService';
 import {
   CLOTHES_CATEGORIES,
   SEASONS,
@@ -164,7 +164,7 @@ export default function AddClothesScreen({ navigation }) {
         tags: [],
       };
 
-      await addDoc(collection(db, "users", userId, "wardrobe"), itemData);
+      await addWardrobeItem(userId, itemData);
 
       // Reset form
       resetForm();
@@ -245,7 +245,6 @@ export default function AddClothesScreen({ navigation }) {
             )}
             style={styles.modalList}
           />
-          <Text style={{ height: 20 }}>Debug spacing</Text>
         </View>
       </View>
     </Modal>

@@ -19,7 +19,7 @@ import {
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import { getWardrobeItems } from "../services/wardrobeService";
-import { logDailyOutfit } from "../services/outfitService";
+import { logDailyOutfit } from '../services/usageService';
 import BottomBar from "../components/BottomBar";
 import { sharedDetailStyles } from "../styles/shared/detail";
 import { outfitDetailStyles } from "../styles/screens/outfitDetail";

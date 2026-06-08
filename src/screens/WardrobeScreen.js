@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, FlatList, StyleSheet } from "react-native";
-import { collection, getDocs } from "firebase/firestore";
-import { db, auth } from "../services/firebase";
+import { auth } from '../services/firebase';
+import { getWardrobeItems } from '../services/wardrobeService';
 import WardrobeItemCard from "../components/WardrobeItemCard";
 import ScreenLayout from "../components/ScreenLayout";
 import ClothesStatsBar from "../components/ClothesStatsBar";
@@ -28,13 +28,11 @@ export default function WardrobeScreen({ navigation }) {
     try {
       setLoading(true);
       const userId = auth.currentUser.uid;
-      const snapshot = await getDocs(
-        collection(db, "users", userId, "wardrobe")
-      );
-      setClothes(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      const items = await getWardrobeItems(userId);
+      setClothes(items);
     } catch (error) {
-      console.error("Error fetching clothes:", error);
-      Alert.alert("Error", "Failed to load clothes");
+      console.error('Error fetching clothes:', error);
+      Alert.alert('Error', 'Failed to load clothes');
     } finally {
       setLoading(false);
     }
