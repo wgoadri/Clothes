@@ -13,10 +13,10 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, storage } from "../services/firebase";
+import { auth } from "../services/firebase";
 import { getWardrobeItems } from "../services/wardrobeService";
 import { createOutfit, updateOutfit } from "../services/outfitService";
+import { uploadImage } from "../services/storageService";
 
 // Components
 import OutfitProgressSteps from "../components/outfit-creator/OutfitProgressSteps";
@@ -76,22 +76,6 @@ export default function OutfitCreatorScreen({ route, navigation }) {
     }
   };
 
-  const uploadImageToStorage = async (uri) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const filename = `outfits/${userId}/${Date.now()}.jpg`;
-      const storageRef = ref(storage, filename);
-
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
-      return downloadURL;
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      throw error;
-    }
-  };
-
   const toggleItemSelection = (itemId) => {
     setSelectedItems((prev) =>
       prev.includes(itemId)
@@ -144,10 +128,16 @@ export default function OutfitCreatorScreen({ route, navigation }) {
     try {
       setUploading(true);
 
-      // Upload image if it's a local URI
+      // Try to persist the image to Storage; fall back to the local URI so a
+      // failed/disabled upload never blocks saving the outfit.
       let imageUrl = outfitImage;
-      if (outfitImage && outfitImage.startsWith("file://")) {
-        imageUrl = await uploadImageToStorage(outfitImage);
+      try {
+        imageUrl = await uploadImage(
+          outfitImage,
+          `users/${userId}/outfits/${Date.now()}.jpg`
+        );
+      } catch (uploadError) {
+        console.warn("Outfit image upload failed, using local URI:", uploadError);
       }
 
       const selectedItemsData = wardrobeItems.filter((item) =>

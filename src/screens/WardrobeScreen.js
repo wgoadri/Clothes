@@ -43,13 +43,12 @@ export default function WardrobeScreen({ navigation }) {
 
     // Filter
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (clothes) =>
-          clothes.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (clothes.name && clothes.name.toLowerCase().includes(query)) ||
           (clothes.description &&
-            clothes.description
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()))
+            clothes.description.toLowerCase().includes(query))
       );
     }
 

@@ -49,13 +49,12 @@ export default function OutfitsScreen({ navigation }) {
 
     // Search filter
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (outfit) =>
-          outfit.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (outfit.name && outfit.name.toLowerCase().includes(query)) ||
           (outfit.description &&
-            outfit.description
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()))
+            outfit.description.toLowerCase().includes(query))
       );
     }
 

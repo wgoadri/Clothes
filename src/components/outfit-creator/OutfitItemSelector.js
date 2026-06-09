@@ -34,11 +34,11 @@ export default function OutfitItemSelector({
     let filtered = [...wardrobeItems];
 
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (item) =>
-          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.brand &&
-            item.brand.toLowerCase().includes(searchQuery.toLowerCase()))
+          (item.name && item.name.toLowerCase().includes(query)) ||
+          (item.brand && item.brand.toLowerCase().includes(query))
       );
     }
 
@@ -118,8 +118,8 @@ export default function OutfitItemSelector({
 
       {/* Category Filter */}
       <ClothesFilterBar
-        selectedCategory={categoryFilter}
-        onSelectCategory={setCategoryFilter}
+        category={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
       />
 
       {/* Items List */}

@@ -15,6 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { auth } from '../services/firebase';
 import { addWardrobeItem } from '../services/wardrobeService';
+import { uploadImage } from '../services/storageService';
 import {
   CLOTHES_CATEGORIES,
   SEASONS,
@@ -84,7 +85,7 @@ export default function AddClothesScreen({ navigation }) {
 
   const openGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaType.images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,
@@ -133,11 +134,23 @@ export default function AddClothesScreen({ navigation }) {
     const userId = auth.currentUser.uid;
 
     try {
+      // Try to persist the image to Storage; fall back to the local URI so a
+      // failed/disabled upload never blocks adding the item.
+      let imageUrl = image;
+      try {
+        imageUrl = await uploadImage(
+          image,
+          `users/${userId}/wardrobe/${Date.now()}.jpg`
+        );
+      } catch (uploadError) {
+        console.warn('Item image upload failed, using local URI:', uploadError);
+      }
+
       const itemData = {
         // Basic fields
         name: name.trim(),
         category,
-        image,
+        image: imageUrl,
 
         // Extra fields
         brand: brand.trim(),
